@@ -4,7 +4,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useInternetIdentity } from "@/hooks/useInternetIdentity";
-import { useClaimROI, useUserData, useUserProfile } from "@/hooks/useQueries";
+import {
+  useBroadcastNotices,
+  useClaimROI,
+  useUserData,
+  useUserProfile,
+} from "@/hooks/useQueries";
 import {
   canClaimROI,
   formatINR,
@@ -12,17 +17,21 @@ import {
 } from "@/store/investmentStore";
 import { Link } from "@tanstack/react-router";
 import {
+  AlertCircle,
   ArrowDownCircle,
   ArrowUpCircle,
   CheckCircle2,
   ChevronRight,
   Clock,
+  Info,
   Loader2,
   Sparkles,
   TrendingUp,
   Wallet,
+  X,
 } from "lucide-react";
-import { motion } from "motion/react";
+import { AnimatePresence, motion } from "motion/react";
+import { useState } from "react";
 import { toast } from "sonner";
 
 const stagger = {
@@ -41,6 +50,34 @@ export function Dashboard() {
   const { data: profile } = useUserProfile();
   const { data: userData, isLoading } = useUserData(userId);
   const claimMutation = useClaimROI(userId);
+  const { data: notices = [] } = useBroadcastNotices();
+  const [dismissedNotices, setDismissedNotices] = useState<Set<string>>(
+    new Set(),
+  );
+
+  const visibleNotices = notices.filter((n) => !dismissedNotices.has(n.id));
+
+  function dismissNotice(id: string) {
+    setDismissedNotices((prev) => new Set([...prev, id]));
+  }
+
+  const noticeStyles = {
+    info: {
+      bg: "bg-chart-3/10 border-chart-3/30",
+      text: "text-chart-3",
+      icon: Info,
+    },
+    warning: {
+      bg: "bg-warning/10 border-warning/30",
+      text: "text-warning",
+      icon: AlertCircle,
+    },
+    success: {
+      bg: "bg-chart-2/10 border-chart-2/30",
+      text: "text-chart-2",
+      icon: CheckCircle2,
+    },
+  };
 
   const wallet = userData?.wallet;
   const activeInvestments =
@@ -85,6 +122,48 @@ export function Dashboard() {
 
   return (
     <div className="p-4 lg:p-8 max-w-7xl mx-auto">
+      {/* Broadcast Notices */}
+      <AnimatePresence>
+        {visibleNotices.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            className="mb-5 space-y-2"
+          >
+            {visibleNotices.map((notice) => {
+              const style = noticeStyles[notice.type];
+              const Icon = style.icon;
+              return (
+                <motion.div
+                  key={notice.id}
+                  layout
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className={`rounded-lg border px-4 py-3 flex items-start gap-3 ${style.bg}`}
+                >
+                  <Icon
+                    className={`w-4 h-4 ${style.text} mt-0.5 flex-shrink-0`}
+                  />
+                  <p className={`text-sm flex-1 ${style.text}`}>
+                    {notice.message}
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => dismissNotice(notice.id)}
+                    className={`${style.text} opacity-60 hover:opacity-100 transition-opacity flex-shrink-0`}
+                    aria-label="Dismiss notice"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </motion.div>
+              );
+            })}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Header */}
       <motion.div
         className="mb-8"

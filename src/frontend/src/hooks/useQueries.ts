@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { UserRole } from "../backend.d";
 import {
   type BankProfile,
+  type PlanId,
   approveDeposit,
   approveWithdrawal,
   claimROI,
@@ -19,6 +20,18 @@ import {
   saveBankProfile,
   submitDepositRequest,
 } from "../store/investmentStore";
+import {
+  type BroadcastNotice,
+  type PlanOverride,
+  type PlatformSettings,
+  addBroadcastNotice,
+  deleteBroadcastNotice,
+  getBroadcastNotices,
+  getPlanOverrides,
+  getPlatformSettings,
+  savePlanOverride,
+  savePlatformSettings,
+} from "../store/platformStore";
 import { useActor } from "./useActor";
 
 // ── Auth / Profile ────────────────────────────────────────────
@@ -106,7 +119,7 @@ export function useDeposit(userId: string | undefined) {
 export function useCreateInvestment(userId: string | undefined) {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async (planId: "mini" | "starter" | "silver" | "gold") => {
+    mutationFn: async (planId: PlanId) => {
       if (!userId) throw new Error("Not authenticated");
       const result = createInvestment(userId, planId);
       if (!result.success) throw new Error(result.message);
@@ -305,3 +318,80 @@ export function useIsStripeConfigured() {
     enabled: !!actor && !isFetching,
   });
 }
+
+// ── Platform Settings ──────────────────────────────────────────
+
+export function usePlatformSettings() {
+  return useQuery({
+    queryKey: ["platformSettings"],
+    queryFn: getPlatformSettings,
+    staleTime: 5000,
+  });
+}
+
+export function useSavePlatformSettings() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (settings: PlatformSettings) => {
+      savePlatformSettings(settings);
+    },
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: ["platformSettings"] });
+    },
+  });
+}
+
+export function useBroadcastNotices() {
+  return useQuery({
+    queryKey: ["broadcastNotices"],
+    queryFn: getBroadcastNotices,
+    refetchInterval: 15_000,
+  });
+}
+
+export function useAddNotice() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (notice: Omit<BroadcastNotice, "id" | "createdAt">) => {
+      return addBroadcastNotice(notice);
+    },
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: ["broadcastNotices"] });
+    },
+  });
+}
+
+export function useDeleteNotice() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: string) => {
+      deleteBroadcastNotice(id);
+    },
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: ["broadcastNotices"] });
+    },
+  });
+}
+
+export function usePlanOverrides() {
+  return useQuery({
+    queryKey: ["planOverrides"],
+    queryFn: getPlanOverrides,
+    staleTime: 5000,
+  });
+}
+
+export function useSavePlanOverride() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (override: PlanOverride) => {
+      savePlanOverride(override);
+    },
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: ["planOverrides"] });
+    },
+  });
+}
+
+// Re-export types for convenience
+export type { BroadcastNotice, PlanOverride, PlatformSettings };

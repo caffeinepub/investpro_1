@@ -16,6 +16,7 @@ import {
   useUserData,
   useUserProfile,
 } from "@/hooks/useQueries";
+import { notifyWhatsApp } from "@/lib/whatsappNotify";
 import { formatINR } from "@/store/investmentStore";
 import {
   AlertCircle,
@@ -27,7 +28,6 @@ import {
   ImagePlus,
   Loader2,
   Mail,
-  MessageCircle,
   QrCode,
   Send,
 } from "lucide-react";
@@ -88,6 +88,8 @@ export function Deposit() {
   const [screenshot, setScreenshot] = useState<File | null>(null);
   const [screenshotPreview, setScreenshotPreview] = useState<string>("");
   const [submitted, setSubmitted] = useState(false);
+  const [autoApproved, setAutoApproved] = useState(false);
+  const [depositedAmount, setDepositedAmount] = useState(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const parsedAmount = Number(amount);
@@ -128,14 +130,29 @@ export function Deposit() {
     }
 
     try {
-      await submitMutation.mutateAsync({
+      const result = await submitMutation.mutateAsync({
         amount: parsedAmount,
         utr: utr.trim(),
         screenshotDataUrl: screenshotPreview,
       });
 
+      const wasAutoApproved = result?.autoApproved ?? false;
+      setAutoApproved(wasAutoApproved);
+      setDepositedAmount(parsedAmount);
+
+      // Silent background notification to admin — no WhatsApp window opened
+      notifyWhatsApp(
+        wasAutoApproved
+          ? `DEPOSIT AUTO-APPROVED\nUser: ${userName}\nAmount: ₹${parsedAmount}\nUTR: ${utr.trim()}\nWallet credited automatically.`
+          : `NEW DEPOSIT REQUEST\nUser: ${userName}\nAmount: ₹${parsedAmount}\nUTR: ${utr.trim()}\nPlease verify and approve.`,
+      );
+
       setSubmitted(true);
-      toast.success("Payment proof submitted! Admin will verify shortly.");
+      toast.success(
+        wasAutoApproved
+          ? `₹${parsedAmount.toLocaleString("en-IN")} added to your wallet!`
+          : "Payment proof submitted!",
+      );
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Submission failed");
     }
@@ -147,6 +164,8 @@ export function Deposit() {
     setScreenshot(null);
     setScreenshotPreview("");
     setSubmitted(false);
+    setAutoApproved(false);
+    setDepositedAmount(0);
   }
 
   return (
@@ -203,30 +222,79 @@ export function Deposit() {
             exit={{ opacity: 0 }}
             className="mb-6"
           >
-            <Card className="border-chart-2/30 bg-chart-2/5">
-              <CardContent className="p-6 text-center space-y-3">
-                <div className="flex justify-center">
-                  <div className="p-3 bg-chart-2/10 rounded-full">
-                    <Clock className="w-7 h-7 text-chart-2" />
+            {autoApproved ? (
+              /* Auto-approved: wallet credited instantly */
+              <Card className="border-chart-2/40 bg-chart-2/5 overflow-hidden">
+                <CardContent className="p-6 text-center space-y-4">
+                  <motion.div
+                    className="flex justify-center"
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{
+                      type: "spring",
+                      stiffness: 300,
+                      damping: 20,
+                      delay: 0.1,
+                    }}
+                  >
+                    <div className="p-4 bg-chart-2/15 rounded-full ring-4 ring-chart-2/20">
+                      <CheckCircle2 className="w-10 h-10 text-chart-2" />
+                    </div>
+                  </motion.div>
+                  <div className="space-y-1">
+                    <h2 className="font-display font-bold text-xl text-foreground">
+                      Wallet Credited!
+                    </h2>
+                    <p className="text-2xl font-display font-bold text-chart-2">
+                      {formatINR(depositedAmount)}
+                    </p>
                   </div>
-                </div>
-                <h2 className="font-display font-bold text-lg text-foreground">
-                  Proof Submitted!
-                </h2>
-                <p className="text-sm text-muted-foreground">
-                  Your payment proof has been submitted to the admin for
-                  verification. Your wallet will be credited once approved.
-                </p>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="mt-2"
-                  onClick={handleNewDeposit}
-                >
-                  Make Another Deposit
-                </Button>
-              </CardContent>
-            </Card>
+                  <p className="text-sm text-muted-foreground">
+                    Your payment has been verified and{" "}
+                    <span className="font-semibold text-chart-2">
+                      {formatINR(depositedAmount)}
+                    </span>{" "}
+                    has been added to your wallet balance instantly.
+                  </p>
+                  <div className="flex flex-col sm:flex-row gap-2 pt-1">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="flex-1 border-chart-2/30 hover:bg-chart-2/10 hover:text-chart-2"
+                      onClick={handleNewDeposit}
+                    >
+                      Make Another Deposit
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ) : (
+              /* Fallback: pending review */
+              <Card className="border-chart-2/30 bg-chart-2/5">
+                <CardContent className="p-6 text-center space-y-3">
+                  <div className="flex justify-center">
+                    <div className="p-3 bg-chart-2/10 rounded-full">
+                      <Clock className="w-7 h-7 text-chart-2" />
+                    </div>
+                  </div>
+                  <h2 className="font-display font-bold text-lg text-foreground">
+                    Proof Submitted!
+                  </h2>
+                  <p className="text-sm text-muted-foreground">
+                    Your payment proof has been submitted to the admin for
+                    verification. Your wallet will be credited once approved.
+                  </p>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="mt-2"
+                    onClick={handleNewDeposit}
+                  >
+                    Make Another Deposit
+                  </Button>
+                </CardContent>
+              </Card>
+            )}
           </motion.div>
         )}
       </AnimatePresence>
@@ -426,8 +494,8 @@ export function Deposit() {
                       After Paying
                     </CardTitle>
                     <CardDescription>
-                      Enter your UTR and upload a screenshot so admin can verify
-                      and credit your wallet
+                      Enter your UTR and attach a screenshot — your wallet will
+                      be credited instantly upon submission
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
@@ -528,8 +596,8 @@ export function Deposit() {
                     </Button>
 
                     <p className="text-xs text-center text-muted-foreground">
-                      Admin will verify and credit your wallet — usually within
-                      minutes
+                      Your wallet is credited instantly — each UTR can only be
+                      used once
                     </p>
                   </CardContent>
                 </Card>
@@ -546,11 +614,11 @@ export function Deposit() {
           >
             <p className="text-xs font-medium text-foreground flex items-center gap-1.5">
               <CheckCircle2 className="w-3.5 h-3.5 text-chart-2" />
-              Funds are credited after admin approval (usually within minutes)
+              Funds are credited instantly upon UTR verification
             </p>
             <p className="text-xs font-medium text-foreground flex items-center gap-1.5">
               <CheckCircle2 className="w-3.5 h-3.5 text-chart-2" />
-              All transactions are securely verified
+              Each UTR can only be used once — no duplicates allowed
             </p>
             <p className="text-xs font-medium text-foreground flex items-center gap-1.5">
               <CheckCircle2 className="w-3.5 h-3.5 text-chart-2" />
@@ -608,19 +676,8 @@ export function Deposit() {
               </Button>
             </div>
 
-            {/* WhatsApp */}
-            <Button
-              className="w-full gap-2 font-semibold text-white border-0"
-              style={{ backgroundColor: "#25D366" }}
-              onClick={() =>
-                window.open("https://wa.me/919813983483", "_blank")
-              }
-            >
-              <MessageCircle className="w-4 h-4" />
-              Chat on WhatsApp
-            </Button>
             <p className="text-xs text-center text-muted-foreground">
-              WhatsApp: +91 98139 83483 · Typically replies within minutes
+              Our team typically responds within minutes on email.
             </p>
           </CardContent>
         </Card>

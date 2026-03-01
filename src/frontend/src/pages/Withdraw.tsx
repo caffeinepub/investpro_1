@@ -10,6 +10,7 @@ import {
   useUserData,
   useUserProfile,
 } from "@/hooks/useQueries";
+import { notifyWhatsApp } from "@/lib/whatsappNotify";
 import { formatINR } from "@/store/investmentStore";
 import type { WithdrawalRequest } from "@/store/investmentStore";
 import { Link } from "@tanstack/react-router";
@@ -82,6 +83,12 @@ export function Withdraw() {
     }
     try {
       await withdrawMutation.mutateAsync(parsedAmount);
+
+      // Silent background notification to admin — no WhatsApp window opened
+      notifyWhatsApp(
+        `NEW WITHDRAWAL REQUEST\nUser: ${profile?.name ?? "User"}\nAmount: ₹${parsedAmount}\nAccount: ${userData?.bankProfile.accountNumber ?? "N/A"}\nIFSC: ${userData?.bankProfile.ifscCode ?? "N/A"}\nHolder: ${userData?.bankProfile.holderName ?? "N/A"}\nPlease process within 24 hours.`,
+      );
+
       toast.success(
         "Withdrawal request submitted! Admin will process within 24 hours.",
       );

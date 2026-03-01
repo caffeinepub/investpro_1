@@ -1,9 +1,20 @@
 // Local state simulation layer for the investment engine
 // All data persisted to localStorage, keyed by user principal
 
+export type PlanId =
+  | "mini"
+  | "starter"
+  | "silver"
+  | "gold"
+  | "diamond"
+  | "platinum"
+  | "elite"
+  | "vip"
+  | "royal";
+
 export interface Investment {
   id: string;
-  planId: "mini" | "starter" | "silver" | "gold";
+  planId: PlanId;
   planName: string;
   amountInvested: number;
   dailyReturn: number;
@@ -107,6 +118,56 @@ export const INVESTMENT_PLANS = {
     color: "gold",
     description: "Maximum returns",
   },
+  diamond: {
+    id: "diamond" as const,
+    name: "Diamond",
+    amountInvested: 25000,
+    dailyReturn: 4125,
+    termDays: 30,
+    totalReturn: 123750,
+    color: "cyan",
+    description: "Elite growth tier",
+  },
+  platinum: {
+    id: "platinum" as const,
+    name: "Platinum",
+    amountInvested: 50000,
+    dailyReturn: 8250,
+    termDays: 30,
+    totalReturn: 247500,
+    color: "violet",
+    description: "Accelerated wealth",
+  },
+  elite: {
+    id: "elite" as const,
+    name: "Elite",
+    amountInvested: 100000,
+    dailyReturn: 16500,
+    termDays: 30,
+    totalReturn: 495000,
+    color: "rose",
+    description: "High-performance investing",
+  },
+  vip: {
+    id: "vip" as const,
+    name: "VIP",
+    amountInvested: 250000,
+    dailyReturn: 41250,
+    termDays: 30,
+    totalReturn: 1237500,
+    color: "orange",
+    description: "Exclusive VIP returns",
+  },
+  royal: {
+    id: "royal" as const,
+    name: "Royal",
+    amountInvested: 500000,
+    dailyReturn: 82500,
+    termDays: 30,
+    totalReturn: 2475000,
+    color: "gold",
+    description: "The ultimate investment",
+  },
 };
 
 const ADMIN_SAMPLE_DATA_KEY = "__investpro_admin_sample__";
@@ -114,6 +175,19 @@ const GLOBAL_WITHDRAWALS_KEY = "__investpro_global_withdrawals__";
 const GLOBAL_DEPOSITS_KEY = "__investpro_global_deposits__";
 const REFERRAL_MAP_KEY = "__investpro_referral_map__";
 const REFERRAL_EARNINGS_KEY = "__investpro_ref_earnings__";
+const USED_UTRS_KEY = "__investpro_used_utrs__";
+
+function getUsedUTRs(): Set<string> {
+  const raw = localStorage.getItem(USED_UTRS_KEY);
+  if (!raw) return new Set();
+  return new Set(JSON.parse(raw) as string[]);
+}
+
+function markUTRAsUsed(utr: string): void {
+  const set = getUsedUTRs();
+  set.add(utr.trim().toLowerCase());
+  localStorage.setItem(USED_UTRS_KEY, JSON.stringify([...set]));
+}
 
 function getStorageKey(userId: string): string {
   return `investpro_user_${userId}`;
@@ -288,7 +362,7 @@ export function depositToWallet(
 
 export function createInvestment(
   userId: string,
-  planId: "mini" | "starter" | "silver" | "gold",
+  planId: PlanId,
 ): { success: boolean; message: string; data?: UserData } {
   const plan = INVESTMENT_PLANS[planId];
   const data = loadUserData(userId);
@@ -445,11 +519,25 @@ export function submitDepositRequest(
   amount: number,
   utr: string,
   screenshotDataUrl: string,
-): { success: boolean; message: string; requestId?: string } {
+): {
+  success: boolean;
+  message: string;
+  requestId?: string;
+  autoApproved?: boolean;
+} {
   if (!utr.trim()) {
     return {
       success: false,
       message: "Please enter the UTR / transaction reference",
+    };
+  }
+
+  // Reject duplicate UTRs
+  if (getUsedUTRs().has(utr.trim().toLowerCase())) {
+    return {
+      success: false,
+      message:
+        "This UTR has already been used. Duplicate transactions are not allowed.",
     };
   }
 
@@ -462,27 +550,40 @@ export function submitDepositRequest(
     utr: utr.trim(),
     screenshotDataUrl,
     requestedAt: Date.now(),
-    status: "Pending",
+    status: "Approved",
   };
 
-  // Save to global list
+  // Save to global list with Approved status (for admin records)
   const global = getGlobalDeposits();
   global.unshift(request);
   localStorage.setItem(GLOBAL_DEPOSITS_KEY, JSON.stringify(global));
 
-  // Add pending transaction to user's history
+  // Mark UTR as used to prevent duplicate submissions
+  markUTRAsUsed(utr);
+
+  // Auto-credit wallet immediately
   const data = loadUserData(userId);
+  data.wallet.balance += amount;
+  data.wallet.totalDeposited += amount;
   data.transactions.unshift({
     id: generateId(),
     type: "Deposit",
     amount,
-    description: `Deposit ₹${amount.toLocaleString("en-IN")} — Awaiting approval (UTR: ${utr.trim()})`,
+    description: `Deposit ₹${amount.toLocaleString("en-IN")} — Auto-approved (UTR: ${utr.trim()})`,
     timestamp: Date.now(),
-    status: "Pending",
+    status: "Success",
   });
   saveUserData(userId, data);
 
-  return { success: true, message: "Payment proof submitted!", requestId };
+  // Credit referral bonus if applicable
+  creditReferralBonus(userId, amount);
+
+  return {
+    success: true,
+    message: "Payment verified and wallet credited!",
+    requestId,
+    autoApproved: true,
+  };
 }
 
 export function getGlobalDeposits(): DepositRequest[] {
