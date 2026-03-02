@@ -8,8 +8,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useInternetIdentity } from "@/hooks/useInternetIdentity";
 import { useUserData } from "@/hooks/useQueries";
+import { useUserId } from "@/hooks/useUserId";
 import { formatINR } from "@/store/investmentStore";
 import type { Transaction } from "@/store/investmentStore";
 import {
@@ -60,8 +60,7 @@ const IS_CREDIT: Record<Transaction["type"], boolean> = {
 };
 
 export function Transactions() {
-  const { identity } = useInternetIdentity();
-  const userId = identity?.getPrincipal().toString();
+  const userId = useUserId();
   const { data: userData } = useUserData(userId);
 
   const [typeFilter, setTypeFilter] = useState<"all" | Transaction["type"]>(

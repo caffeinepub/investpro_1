@@ -90,7 +90,7 @@
     --sidebar-border: 0.2 0.025 285;
     --sidebar-ring: 0.72 0.2 160;
 
-    /* Gold kept for warning-level badges (Mini plan badge, etc.) */
+    /* Gold kept for warning-level badges */
     --gold: 0.78 0.16 75;
     --gold-bright: 0.85 0.2 78;
     --gold-dim: 0.6 0.12 75;
@@ -133,7 +133,271 @@
 }
 
 @layer utilities {
-  /* Emerald gradient replaces gold-gradient for primary CTAs */
+  /* ── Luxury plan card animations ────────────────────────── */
+
+  @keyframes shimmer-sweep {
+    0% { transform: translateX(-160%) skewX(-14deg); opacity: 0; }
+    8% { opacity: 1; }
+    92% { opacity: 1; }
+    100% { transform: translateX(260%) skewX(-14deg); opacity: 0; }
+  }
+
+  @keyframes pulse-dot {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.55; transform: scale(1.3); }
+  }
+
+  @keyframes royal-shimmer {
+    0%, 100% { filter: brightness(1); }
+    50% { filter: brightness(1.35); }
+  }
+
+  @keyframes luxury-float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-4px); }
+  }
+
+  /* Shimmer sweep overlay */
+  .luxury-card-shimmer {
+    position: relative;
+    overflow: hidden;
+  }
+  .luxury-card-shimmer::after {
+    content: "";
+    position: absolute;
+    top: -20%;
+    left: 0;
+    width: 35%;
+    height: 140%;
+    background: linear-gradient(
+      105deg,
+      transparent 0%,
+      rgba(255,255,255,0.04) 35%,
+      rgba(255,255,255,0.10) 50%,
+      rgba(255,255,255,0.04) 65%,
+      transparent 100%
+    );
+    animation: shimmer-sweep 6s ease-in-out infinite;
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  .live-dot {
+    animation: pulse-dot 1.8s ease-in-out infinite;
+  }
+
+  /* ── CSS Textures for luxury brand cards ─────────────────── */
+
+  .texture-adidas {
+    background-image:
+      repeating-linear-gradient(
+        -55deg,
+        transparent,
+        transparent 9px,
+        rgba(255,255,255,0.045) 9px,
+        rgba(255,255,255,0.045) 11px
+      );
+  }
+
+  .texture-balenciaga {
+    background-image:
+      repeating-linear-gradient(
+        -42deg,
+        transparent,
+        transparent 13px,
+        rgba(160,160,180,0.04) 13px,
+        rgba(160,160,180,0.04) 15px
+      );
+  }
+
+  .texture-boss {
+    background-image:
+      repeating-linear-gradient(
+        90deg,
+        transparent,
+        transparent 22px,
+        rgba(180,195,210,0.07) 22px,
+        rgba(180,195,210,0.07) 23px
+      );
+  }
+
+  .texture-versace {
+    background-image:
+      repeating-linear-gradient(
+        45deg,
+        transparent,
+        transparent 11px,
+        rgba(218,165,32,0.075) 11px,
+        rgba(218,165,32,0.075) 13px
+      ),
+      repeating-linear-gradient(
+        -45deg,
+        transparent,
+        transparent 11px,
+        rgba(218,165,32,0.075) 11px,
+        rgba(218,165,32,0.075) 13px
+      );
+  }
+
+  .texture-tiffany {
+    background-image: radial-gradient(
+      circle,
+      rgba(0,210,195,0.07) 1px,
+      transparent 1px
+    );
+    background-size: 18px 18px;
+  }
+
+  .texture-lv {
+    background-image:
+      repeating-linear-gradient(
+        45deg,
+        transparent,
+        transparent 15px,
+        rgba(205,160,50,0.065) 15px,
+        rgba(205,160,50,0.065) 17px
+      ),
+      repeating-linear-gradient(
+        -45deg,
+        transparent,
+        transparent 15px,
+        rgba(205,160,50,0.065) 15px,
+        rgba(205,160,50,0.065) 17px
+      );
+  }
+
+  .texture-gucci {
+    background-image:
+      repeating-linear-gradient(
+        90deg,
+        transparent,
+        transparent 20px,
+        rgba(200,20,20,0.07) 20px,
+        rgba(200,20,20,0.07) 22px,
+        transparent 22px,
+        transparent 24px,
+        rgba(20,130,30,0.07) 24px,
+        rgba(20,130,30,0.07) 26px
+      );
+  }
+
+  .texture-prada {
+    background-image:
+      repeating-linear-gradient(
+        60deg,
+        transparent,
+        transparent 7px,
+        rgba(255,255,255,0.025) 7px,
+        rgba(255,255,255,0.025) 8px
+      ),
+      repeating-linear-gradient(
+        -60deg,
+        transparent,
+        transparent 7px,
+        rgba(255,255,255,0.025) 7px,
+        rgba(255,255,255,0.025) 8px
+      );
+  }
+
+  .texture-hermes {
+    background-image:
+      repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 5px,
+        rgba(255,130,0,0.055) 5px,
+        rgba(255,130,0,0.055) 6px
+      ),
+      repeating-linear-gradient(
+        90deg,
+        transparent,
+        transparent 5px,
+        rgba(255,90,0,0.035) 5px,
+        rgba(255,90,0,0.035) 6px
+      );
+  }
+
+  /* ── Plan card glow classes ─────────────────────────────── */
+  .plan-glow-adidas {
+    box-shadow: 0 0 20px rgba(255,255,255,0.1), 0 8px 32px rgba(0,0,0,0.55);
+  }
+  .plan-glow-adidas:hover {
+    box-shadow: 0 0 38px rgba(255,255,255,0.18), 0 14px 44px rgba(0,0,0,0.65);
+  }
+  .plan-glow-balenciaga {
+    box-shadow: 0 0 20px rgba(140,140,165,0.18), 0 8px 32px rgba(0,0,0,0.55);
+  }
+  .plan-glow-balenciaga:hover {
+    box-shadow: 0 0 38px rgba(160,160,185,0.28), 0 14px 44px rgba(0,0,0,0.65);
+  }
+  .plan-glow-boss {
+    box-shadow: 0 0 20px rgba(160,185,205,0.2), 0 8px 32px rgba(0,0,0,0.55);
+  }
+  .plan-glow-boss:hover {
+    box-shadow: 0 0 38px rgba(160,185,205,0.32), 0 14px 44px rgba(0,0,0,0.65);
+  }
+  .plan-glow-versace {
+    box-shadow: 0 0 28px rgba(218,165,32,0.38), 0 8px 32px rgba(0,0,0,0.55);
+  }
+  .plan-glow-versace:hover {
+    box-shadow: 0 0 50px rgba(218,165,32,0.52), 0 14px 44px rgba(0,0,0,0.65);
+  }
+  .plan-glow-tiffany {
+    box-shadow: 0 0 28px rgba(0,200,185,0.32), 0 8px 32px rgba(0,0,0,0.55);
+  }
+  .plan-glow-tiffany:hover {
+    box-shadow: 0 0 50px rgba(0,200,185,0.48), 0 14px 44px rgba(0,0,0,0.65);
+  }
+  .plan-glow-lv {
+    box-shadow: 0 0 28px rgba(180,130,40,0.38), 0 8px 32px rgba(0,0,0,0.55);
+  }
+  .plan-glow-lv:hover {
+    box-shadow: 0 0 50px rgba(180,130,40,0.52), 0 14px 44px rgba(0,0,0,0.65);
+  }
+  .plan-glow-gucci {
+    box-shadow: 0 0 28px rgba(0,140,55,0.32), 0 8px 32px rgba(0,0,0,0.55);
+  }
+  .plan-glow-gucci:hover {
+    box-shadow: 0 0 50px rgba(0,140,55,0.48), 0 14px 44px rgba(0,0,0,0.65);
+  }
+  .plan-glow-prada {
+    box-shadow: 0 0 18px rgba(200,200,225,0.12), 0 8px 32px rgba(0,0,0,0.65);
+  }
+  .plan-glow-prada:hover {
+    box-shadow: 0 0 35px rgba(200,200,225,0.22), 0 14px 44px rgba(0,0,0,0.75);
+  }
+  .plan-glow-royal {
+    box-shadow: 0 0 42px rgba(255,65,15,0.55), 0 0 85px rgba(255,65,15,0.22), 0 8px 32px rgba(0,0,0,0.55);
+  }
+  .plan-glow-royal:hover {
+    box-shadow: 0 0 65px rgba(255,65,15,0.72), 0 0 130px rgba(255,65,15,0.32), 0 14px 44px rgba(0,0,0,0.65);
+  }
+
+  /* Legacy glow aliases kept for other pages */
+  .plan-glow-emerald { box-shadow: 0 0 25px oklch(0.72 0.2 160 / 0.3); }
+  .plan-glow-emerald:hover { box-shadow: 0 0 40px oklch(0.72 0.2 160 / 0.5); }
+  .plan-glow-blue { box-shadow: 0 0 25px oklch(0.65 0.22 240 / 0.3); }
+  .plan-glow-blue:hover { box-shadow: 0 0 40px oklch(0.65 0.22 240 / 0.5); }
+  .plan-glow-indigo { box-shadow: 0 0 25px oklch(0.68 0.24 262 / 0.3); }
+  .plan-glow-indigo:hover { box-shadow: 0 0 40px oklch(0.68 0.24 262 / 0.5); }
+  .plan-glow-amber { box-shadow: 0 0 25px oklch(0.78 0.2 75 / 0.35); }
+  .plan-glow-amber:hover { box-shadow: 0 0 40px oklch(0.78 0.2 75 / 0.55); }
+  .plan-glow-cyan { box-shadow: 0 0 30px oklch(0.7 0.2 195 / 0.4); }
+  .plan-glow-cyan:hover { box-shadow: 0 0 50px oklch(0.7 0.2 195 / 0.6); }
+  .plan-glow-violet { box-shadow: 0 0 30px oklch(0.65 0.28 280 / 0.4); }
+  .plan-glow-violet:hover { box-shadow: 0 0 50px oklch(0.65 0.28 280 / 0.6); }
+  .plan-glow-rose { box-shadow: 0 0 30px oklch(0.65 0.28 10 / 0.4); }
+  .plan-glow-rose:hover { box-shadow: 0 0 50px oklch(0.65 0.28 10 / 0.6); }
+  .plan-glow-orange { box-shadow: 0 0 30px oklch(0.7 0.22 50 / 0.4); }
+  .plan-glow-orange:hover { box-shadow: 0 0 50px oklch(0.7 0.22 50 / 0.6); }
+
+  /* Royal badge shimmer */
+  .royal-badge {
+    background: linear-gradient(135deg, rgba(146,64,14,0.6) 0%, rgba(217,119,6,0.6) 50%, rgba(245,158,11,0.6) 100%);
+    animation: royal-shimmer 3s ease-in-out infinite;
+  }
+
+  /* ── Brand utilities ───────────────────────────────────── */
   .emerald-gradient {
     background: linear-gradient(135deg, oklch(var(--emerald)) 0%, oklch(var(--emerald-bright)) 100%);
   }
@@ -143,7 +407,6 @@
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
-  /* Gold gradient kept for warning/gold badge usage */
   .gold-gradient {
     background: linear-gradient(135deg, oklch(var(--gold)) 0%, oklch(var(--gold-bright)) 100%);
   }
@@ -153,7 +416,6 @@
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
-  /* Primary text now uses emerald */
   .primary-text {
     background: linear-gradient(135deg, oklch(var(--emerald)) 0%, oklch(var(--emerald-bright)) 100%);
     -webkit-background-clip: text;
@@ -184,70 +446,26 @@
     background: linear-gradient(90deg, transparent, oklch(var(--emerald) / 0.5), transparent);
   }
 
-  /* ── Plan card glow classes ─────────────────────────────── */
-  .plan-glow-emerald {
-    box-shadow: 0 0 25px oklch(0.72 0.2 160 / 0.3);
+  /* ── PWA / Mobile App safe-area helpers ─────────────────── */
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
   }
-  .plan-glow-emerald:hover {
-    box-shadow: 0 0 40px oklch(0.72 0.2 160 / 0.5);
-  }
-  .plan-glow-blue {
-    box-shadow: 0 0 25px oklch(0.65 0.22 240 / 0.3);
-  }
-  .plan-glow-blue:hover {
-    box-shadow: 0 0 40px oklch(0.65 0.22 240 / 0.5);
-  }
-  .plan-glow-indigo {
-    box-shadow: 0 0 25px oklch(0.68 0.24 262 / 0.3);
-  }
-  .plan-glow-indigo:hover {
-    box-shadow: 0 0 40px oklch(0.68 0.24 262 / 0.5);
-  }
-  .plan-glow-amber {
-    box-shadow: 0 0 25px oklch(0.78 0.2 75 / 0.35);
-  }
-  .plan-glow-amber:hover {
-    box-shadow: 0 0 40px oklch(0.78 0.2 75 / 0.55);
-  }
-  .plan-glow-cyan {
-    box-shadow: 0 0 30px oklch(0.7 0.2 195 / 0.4);
-  }
-  .plan-glow-cyan:hover {
-    box-shadow: 0 0 50px oklch(0.7 0.2 195 / 0.6);
-  }
-  .plan-glow-violet {
-    box-shadow: 0 0 30px oklch(0.65 0.28 280 / 0.4);
-  }
-  .plan-glow-violet:hover {
-    box-shadow: 0 0 50px oklch(0.65 0.28 280 / 0.6);
-  }
-  .plan-glow-rose {
-    box-shadow: 0 0 30px oklch(0.65 0.28 10 / 0.4);
-  }
-  .plan-glow-rose:hover {
-    box-shadow: 0 0 50px oklch(0.65 0.28 10 / 0.6);
-  }
-  .plan-glow-orange {
-    box-shadow: 0 0 30px oklch(0.7 0.22 50 / 0.4);
-  }
-  .plan-glow-orange:hover {
-    box-shadow: 0 0 50px oklch(0.7 0.22 50 / 0.6);
-  }
-  .plan-glow-royal {
-    box-shadow: 0 0 40px oklch(0.78 0.2 78 / 0.5), 0 0 80px oklch(0.78 0.2 78 / 0.2);
-  }
-  .plan-glow-royal:hover {
-    box-shadow: 0 0 60px oklch(0.78 0.2 78 / 0.7), 0 0 120px oklch(0.78 0.2 78 / 0.3);
+  .pb-safe {
+    padding-bottom: max(env(safe-area-inset-bottom, 0px), 1rem);
   }
 
-  /* Royal badge shimmer */
-  .royal-badge {
-    background: linear-gradient(135deg, rgba(146,64,14,0.6) 0%, rgba(217,119,6,0.6) 50%, rgba(245,158,11,0.6) 100%);
-    animation: royal-shimmer 3s ease-in-out infinite;
+  /* Remove tap highlight on mobile */
+  * {
+    -webkit-tap-highlight-color: transparent;
   }
 
-  @keyframes royal-shimmer {
-    0%, 100% { filter: brightness(1); }
-    50% { filter: brightness(1.3); }
+  /* Prevent text size adjustment on orientation change */
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  /* Smooth scrolling for app-like feel */
+  html, body {
+    overscroll-behavior: none;
   }
 }

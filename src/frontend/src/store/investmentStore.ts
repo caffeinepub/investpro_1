@@ -82,8 +82,8 @@ export const INVESTMENT_PLANS = {
     id: "mini" as const,
     name: "Mini",
     amountInvested: 500,
-    dailyReturn: 82,
-    termDays: 30,
+    dailyReturn: 164,
+    termDays: 15,
     totalReturn: 2460,
     color: "chart-2",
     description: "Start small, grow big",
@@ -92,8 +92,8 @@ export const INVESTMENT_PLANS = {
     id: "starter" as const,
     name: "Starter",
     amountInvested: 1000,
-    dailyReturn: 165,
-    termDays: 30,
+    dailyReturn: 330,
+    termDays: 15,
     totalReturn: 4950,
     color: "chart-3",
     description: "Perfect for beginners",
@@ -102,8 +102,8 @@ export const INVESTMENT_PLANS = {
     id: "silver" as const,
     name: "Silver",
     amountInvested: 5000,
-    dailyReturn: 825,
-    termDays: 30,
+    dailyReturn: 1650,
+    termDays: 15,
     totalReturn: 24750,
     color: "chart-2",
     description: "For serious investors",
@@ -112,8 +112,8 @@ export const INVESTMENT_PLANS = {
     id: "gold" as const,
     name: "Gold",
     amountInvested: 10000,
-    dailyReturn: 1650,
-    termDays: 30,
+    dailyReturn: 3300,
+    termDays: 15,
     totalReturn: 49500,
     color: "gold",
     description: "Maximum returns",
@@ -122,8 +122,8 @@ export const INVESTMENT_PLANS = {
     id: "diamond" as const,
     name: "Diamond",
     amountInvested: 25000,
-    dailyReturn: 4125,
-    termDays: 30,
+    dailyReturn: 8250,
+    termDays: 15,
     totalReturn: 123750,
     color: "cyan",
     description: "Elite growth tier",
@@ -132,8 +132,8 @@ export const INVESTMENT_PLANS = {
     id: "platinum" as const,
     name: "Platinum",
     amountInvested: 50000,
-    dailyReturn: 8250,
-    termDays: 30,
+    dailyReturn: 16500,
+    termDays: 15,
     totalReturn: 247500,
     color: "violet",
     description: "Accelerated wealth",
@@ -142,8 +142,8 @@ export const INVESTMENT_PLANS = {
     id: "elite" as const,
     name: "Elite",
     amountInvested: 100000,
-    dailyReturn: 16500,
-    termDays: 30,
+    dailyReturn: 33000,
+    termDays: 15,
     totalReturn: 495000,
     color: "rose",
     description: "High-performance investing",
@@ -152,8 +152,8 @@ export const INVESTMENT_PLANS = {
     id: "vip" as const,
     name: "VIP",
     amountInvested: 250000,
-    dailyReturn: 41250,
-    termDays: 30,
+    dailyReturn: 82500,
+    termDays: 15,
     totalReturn: 1237500,
     color: "orange",
     description: "Exclusive VIP returns",
@@ -162,8 +162,8 @@ export const INVESTMENT_PLANS = {
     id: "royal" as const,
     name: "Royal",
     amountInvested: 500000,
-    dailyReturn: 82500,
-    termDays: 30,
+    dailyReturn: 165000,
+    termDays: 15,
     totalReturn: 2475000,
     color: "gold",
     description: "The ultimate investment",
@@ -423,16 +423,18 @@ export function claimROI(
     };
   }
 
+  const plan = INVESTMENT_PLANS[inv.planId];
+  const termDays = plan?.termDays ?? 15;
   const daysSinceStart = Math.floor(
     (now - inv.startDate) / (1000 * 60 * 60 * 24),
   );
-  const totalDays = Math.min(daysSinceStart + 1, 30);
+  const totalDays = Math.min(daysSinceStart + 1, termDays);
   const claimAmount = inv.dailyReturn;
 
   inv.totalEarned += claimAmount;
   inv.lastClaimDate = now;
   inv.daysCompleted = totalDays;
-  if (totalDays >= 30) inv.status = "Expired";
+  if (totalDays >= termDays) inv.status = "Expired";
 
   data.wallet.balance += claimAmount;
   data.wallet.totalROIEarned += claimAmount;

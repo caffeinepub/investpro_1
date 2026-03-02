@@ -2,8 +2,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { useInternetIdentity } from "@/hooks/useInternetIdentity";
 import { useReferralStats } from "@/hooks/useQueries";
+import { useUserId } from "@/hooks/useUserId";
 import { formatINR, getReferralLink } from "@/store/investmentStore";
 import {
   Copy,
@@ -18,8 +18,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 export function Referrals() {
-  const { identity } = useInternetIdentity();
-  const userId = identity?.getPrincipal().toString();
+  const userId = useUserId();
   const { data: friends = [] } = useReferralStats(userId);
   const [copied, setCopied] = useState(false);
 

@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { useInternetIdentity } from "@/hooks/useInternetIdentity";
 import { useIsAdmin, useUserProfile } from "@/hooks/useQueries";
+import { clearMobileSession } from "@/utils/mobileAuth";
 import { Link, useRouterState } from "@tanstack/react-router";
 import {
   ArrowDownCircle,
@@ -14,6 +15,7 @@ import {
   LayoutDashboard,
   LogOut,
   Menu,
+  MoreHorizontal,
   Settings,
   Share2,
   Shield,
@@ -40,6 +42,15 @@ const NAV_ITEMS: NavItem[] = [
   { label: "Bank Profile", href: "/bank-profile", icon: Building2 },
   { label: "Settings", href: "/settings", icon: Settings },
   { label: "Admin Panel", href: "/admin", icon: Shield, adminOnly: true },
+];
+
+// The 5 bottom nav tabs (primary actions)
+const BOTTOM_NAV: NavItem[] = [
+  { label: "Home", href: "/dashboard", icon: LayoutDashboard },
+  { label: "Plans", href: "/plans", icon: TrendingUp },
+  { label: "Deposit", href: "/deposit", icon: ArrowDownCircle },
+  { label: "Withdraw", href: "/withdraw", icon: ArrowUpCircle },
+  { label: "History", href: "/transactions", icon: History },
 ];
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
@@ -155,7 +166,11 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
           variant="ghost"
           size="sm"
           className="w-full justify-start gap-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10 h-8"
-          onClick={clear}
+          onClick={() => {
+            clearMobileSession();
+            clear();
+            window.location.reload();
+          }}
         >
           <LogOut className="w-3.5 h-3.5" />
           Sign Out
@@ -206,13 +221,6 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         {/* Mobile topbar */}
         <header className="lg:hidden flex items-center justify-between px-4 py-3 bg-sidebar border-b border-sidebar-border">
-          <button
-            type="button"
-            onClick={() => setSidebarOpen(true)}
-            className="p-2 rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary"
-          >
-            <Menu className="w-5 h-5" />
-          </button>
           <Link to="/dashboard" className="flex items-center gap-2">
             <img
               src="/assets/generated/investpro-logo-transparent.dim_120x120.png"
@@ -223,15 +231,74 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
               InvestPro
             </span>
           </Link>
-          <Avatar className="h-7 w-7 border border-primary/30">
-            <AvatarFallback className="bg-primary/10 text-primary text-xs font-bold">
-              {initials}
-            </AvatarFallback>
-          </Avatar>
+          <div className="flex items-center gap-2">
+            <Avatar className="h-7 w-7 border border-primary/30">
+              <AvatarFallback className="bg-primary/10 text-primary text-xs font-bold">
+                {initials}
+              </AvatarFallback>
+            </Avatar>
+            <button
+              type="button"
+              onClick={() => setSidebarOpen(true)}
+              className="p-2 rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary"
+              aria-label="More menu"
+            >
+              <MoreHorizontal className="w-5 h-5" />
+            </button>
+          </div>
         </header>
 
-        {/* Page content */}
-        <main className="flex-1 overflow-y-auto">{children}</main>
+        {/* Page content -- extra bottom padding on mobile for the bottom nav */}
+        <main className="flex-1 overflow-y-auto pb-[env(safe-area-inset-bottom)] lg:pb-0">
+          <div className="lg:h-full pb-16 lg:pb-0">{children}</div>
+        </main>
+
+        {/* Mobile Bottom Navigation Bar */}
+        <nav
+          className="lg:hidden fixed bottom-0 left-0 right-0 z-30 bg-sidebar/95 backdrop-blur-md border-t border-sidebar-border"
+          style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
+        >
+          <div className="flex items-stretch">
+            {BOTTOM_NAV.map((item) => {
+              const isActive =
+                currentPath === item.href ||
+                currentPath.startsWith(`${item.href}/`);
+              const Icon = item.icon;
+              return (
+                <Link
+                  key={item.href}
+                  to={item.href}
+                  className="flex-1 flex flex-col items-center justify-center gap-0.5 py-2 relative transition-colors"
+                >
+                  {/* Active indicator pill */}
+                  {isActive && (
+                    <motion.span
+                      layoutId="bottom-nav-indicator"
+                      className="absolute top-0 left-1/2 -translate-x-1/2 w-8 h-0.5 rounded-full gold-gradient"
+                      transition={{
+                        type: "spring",
+                        stiffness: 400,
+                        damping: 30,
+                      }}
+                    />
+                  )}
+                  <Icon
+                    className={`w-5 h-5 transition-colors ${
+                      isActive ? "text-primary" : "text-muted-foreground"
+                    }`}
+                  />
+                  <span
+                    className={`text-[10px] font-medium transition-colors ${
+                      isActive ? "text-primary" : "text-muted-foreground"
+                    }`}
+                  >
+                    {item.label}
+                  </span>
+                </Link>
+              );
+            })}
+          </div>
+        </nav>
       </div>
     </div>
   );

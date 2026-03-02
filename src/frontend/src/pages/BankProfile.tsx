@@ -9,8 +9,8 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useInternetIdentity } from "@/hooks/useInternetIdentity";
 import { useSaveBankProfile, useUserData } from "@/hooks/useQueries";
+import { useUserId } from "@/hooks/useUserId";
 import {
   AlertCircle,
   Building2,
@@ -23,8 +23,7 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 export function BankProfile() {
-  const { identity } = useInternetIdentity();
-  const userId = identity?.getPrincipal().toString();
+  const userId = useUserId();
   const { data: userData } = useUserData(userId);
   const saveMutation = useSaveBankProfile(userId);
 

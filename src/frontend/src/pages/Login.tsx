@@ -1,21 +1,30 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { useInternetIdentity } from "@/hooks/useInternetIdentity";
+import {
+  checkDeviceLock,
+  getAutoLoginMobile,
+  getSavedMobile,
+  sendOTP,
+  verifyOTP,
+} from "@/utils/mobileAuth";
 import {
   BarChart3,
+  CheckCircle2,
+  Info,
   Loader2,
-  LogIn,
+  Phone,
   Shield,
   TrendingUp,
   Zap,
 } from "lucide-react";
-import { motion } from "motion/react";
+import { AnimatePresence, motion } from "motion/react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 const FEATURES = [
   {
     icon: TrendingUp,
     title: "Daily Returns",
-    desc: "Earn up to ₹1,650/day on your investments",
+    desc: "Earn up to ₹1,65,000/day on your investments",
   },
   {
     icon: Shield,
@@ -29,13 +38,190 @@ const FEATURES = [
   },
   {
     icon: BarChart3,
-    title: "Multiple Plans",
-    desc: "Starter, Silver & Gold tiers available",
+    title: "9 Premium Plans",
+    desc: "Mini to Royal — invest your way",
   },
 ];
 
+const RESEND_TIMEOUT = 30;
+
 export function Login() {
-  const { login, isLoggingIn, isInitializing } = useInternetIdentity();
+  const [step, setStep] = useState<1 | 2>(1);
+  const [mobile, setMobile] = useState(() => {
+    const saved = getSavedMobile();
+    // Strip leading +91 if present
+    return saved.startsWith("+91") ? saved.slice(3) : saved;
+  });
+  const [mobileError, setMobileError] = useState("");
+  const [otpDigits, setOtpDigits] = useState<string[]>(Array(6).fill(""));
+  const [displayOTP, setDisplayOTP] = useState("");
+  const [resendTimer, setResendTimer] = useState(RESEND_TIMEOUT);
+  const [isVerifying, setIsVerifying] = useState(false);
+  const [isSending, setIsSending] = useState(false);
+  const [error, setError] = useState("");
+  const [autoLoggingIn, setAutoLoggingIn] = useState(false);
+
+  // Auto-login: if this device already verified, restore session and redirect
+  useEffect(() => {
+    const autoMobile = getAutoLoginMobile();
+    if (autoMobile) {
+      setAutoLoggingIn(true);
+      // Give a brief moment to show the animation, then reload into app
+      setTimeout(() => {
+        window.location.reload();
+      }, 1200);
+    }
+  }, []);
+
+  // Refs for the 6 OTP boxes
+  const digitRefs = useRef<Array<HTMLInputElement | null>>(Array(6).fill(null));
+
+  // Countdown timer for resend
+  useEffect(() => {
+    if (step !== 2) return;
+    if (resendTimer <= 0) return;
+    const id = setInterval(() => {
+      setResendTimer((t) => {
+        if (t <= 1) {
+          clearInterval(id);
+          return 0;
+        }
+        return t - 1;
+      });
+    }, 1000);
+    return () => clearInterval(id);
+  }, [step, resendTimer]);
+
+  const handleSendOTP = useCallback(() => {
+    const cleaned = mobile.replace(/\D/g, "");
+    if (cleaned.length !== 10) {
+      setMobileError("Please enter a valid 10-digit mobile number");
+      return;
+    }
+    // Check if this number is locked to another device
+    const lockErr = checkDeviceLock(cleaned);
+    if (lockErr) {
+      setMobileError(lockErr);
+      return;
+    }
+    setMobileError("");
+    setIsSending(true);
+    // Small delay to simulate async
+    setTimeout(() => {
+      const otp = sendOTP(cleaned);
+      setDisplayOTP(otp);
+      setOtpDigits(Array(6).fill(""));
+      setError("");
+      setResendTimer(RESEND_TIMEOUT);
+      setStep(2);
+      setIsSending(false);
+      // Auto-focus first digit box after render
+      setTimeout(() => digitRefs.current[0]?.focus(), 100);
+    }, 400);
+  }, [mobile]);
+
+  const handleResend = useCallback(() => {
+    const cleaned = mobile.replace(/\D/g, "");
+    const otp = sendOTP(cleaned);
+    setDisplayOTP(otp);
+    setOtpDigits(Array(6).fill(""));
+    setError("");
+    setResendTimer(RESEND_TIMEOUT);
+    setTimeout(() => digitRefs.current[0]?.focus(), 50);
+  }, [mobile]);
+
+  const handleDigitChange = (idx: number, value: string) => {
+    // Allow only single digit
+    const digit = value.replace(/\D/g, "").slice(-1);
+    const next = [...otpDigits];
+    next[idx] = digit;
+    setOtpDigits(next);
+    setError("");
+
+    // Auto-advance to next box
+    if (digit && idx < 5) {
+      digitRefs.current[idx + 1]?.focus();
+    }
+  };
+
+  const handleDigitKeyDown = (
+    idx: number,
+    e: React.KeyboardEvent<HTMLInputElement>,
+  ) => {
+    if (e.key === "Backspace" && !otpDigits[idx] && idx > 0) {
+      digitRefs.current[idx - 1]?.focus();
+    }
+    if (e.key === "Enter") {
+      const allFilled = otpDigits.every((d) => d !== "");
+      if (allFilled) handleVerify();
+    }
+  };
+
+  const handleDigitPaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
+    const pasted = e.clipboardData
+      .getData("text")
+      .replace(/\D/g, "")
+      .slice(0, 6);
+    if (pasted.length > 0) {
+      e.preventDefault();
+      const next = Array(6).fill("");
+      for (let i = 0; i < pasted.length; i++) next[i] = pasted[i];
+      setOtpDigits(next);
+      const focusIdx = Math.min(pasted.length, 5);
+      digitRefs.current[focusIdx]?.focus();
+    }
+  };
+
+  const handleVerify = useCallback(() => {
+    const otp = otpDigits.join("");
+    if (otp.length < 6) return;
+    const cleaned = mobile.replace(/\D/g, "");
+    setIsVerifying(true);
+    setError("");
+
+    setTimeout(() => {
+      const result = verifyOTP(cleaned, otp);
+      if (result.success) {
+        window.location.reload();
+      } else {
+        setError(result.message);
+        setIsVerifying(false);
+        // Shake the inputs by clearing them
+        setOtpDigits(Array(6).fill(""));
+        setTimeout(() => digitRefs.current[0]?.focus(), 50);
+      }
+    }, 500);
+  }, [otpDigits, mobile]);
+
+  const allDigitsFilled = otpDigits.every((d) => d !== "");
+
+  // Auto-login splash
+  if (autoLoggingIn) {
+    return (
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center gap-6">
+        <motion.div
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 0.4 }}
+          className="flex flex-col items-center gap-4"
+        >
+          <img
+            src="/assets/generated/investpro-logo-transparent.dim_120x120.png"
+            alt="InvestPro"
+            className="w-16 h-16 object-contain animate-pulse-gold"
+          />
+          <div className="flex items-center gap-2 text-chart-2">
+            <CheckCircle2 className="w-5 h-5" />
+            <span className="text-base font-semibold">Device recognised</span>
+          </div>
+          <p className="text-sm text-muted-foreground">
+            Logging you in automatically...
+          </p>
+          <Loader2 className="w-6 h-6 animate-spin text-primary mt-1" />
+        </motion.div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4 relative overflow-hidden">
@@ -126,12 +312,12 @@ export function Login() {
             transition={{ delay: 0.5 }}
           >
             <div className="text-center px-4 border-r border-primary/20">
-              <p className="font-display font-bold text-2xl gold-text">16.5%</p>
+              <p className="font-display font-bold text-2xl gold-text">33%</p>
               <p className="text-[11px] text-muted-foreground">Daily ROI</p>
             </div>
             <div className="text-center px-4 border-r border-primary/20">
               <p className="font-display font-bold text-2xl text-foreground">
-                30
+                15
               </p>
               <p className="text-[11px] text-muted-foreground">Day Terms</p>
             </div>
@@ -150,67 +336,247 @@ export function Login() {
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
         >
-          <Card className="border-primary/20 bg-card shadow-gold-lg">
-            <CardContent className="p-8 space-y-6">
-              <div className="text-center">
-                <div className="inline-flex p-3 rounded-xl gold-gradient mb-4">
-                  <LogIn className="w-6 h-6 text-primary-foreground" />
-                </div>
-                <h3 className="font-display text-2xl font-bold text-foreground">
-                  Welcome Back
-                </h3>
-                <p className="text-muted-foreground text-sm mt-1">
-                  Sign in to access your investment portfolio
-                </p>
-              </div>
-
-              <div className="space-y-3">
-                <Button
-                  onClick={login}
-                  className="w-full gold-gradient text-primary-foreground border-0 font-semibold text-base h-12 shadow-gold hover:opacity-90 transition-opacity"
-                  disabled={isLoggingIn || isInitializing}
-                >
-                  {isLoggingIn || isInitializing ? (
-                    <Loader2 className="w-5 h-5 animate-spin mr-2" />
-                  ) : (
-                    <LogIn className="w-5 h-5 mr-2" />
-                  )}
-                  {isInitializing
-                    ? "Initializing..."
-                    : isLoggingIn
-                      ? "Opening Login..."
-                      : "Sign In with Internet Identity"}
-                </Button>
-
-                <p className="text-xs text-center text-muted-foreground">
-                  Don't have an account?{" "}
-                  <button
-                    type="button"
-                    onClick={login}
-                    className="text-primary hover:underline font-medium"
+          <Card className="border-primary/20 bg-card shadow-gold-lg overflow-hidden">
+            <CardContent className="p-0">
+              <AnimatePresence mode="wait">
+                {step === 1 ? (
+                  <motion.div
+                    key="step1"
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -20 }}
+                    transition={{ duration: 0.3 }}
+                    className="p-8 space-y-6"
                   >
-                    Create one free
-                  </button>
-                </p>
-              </div>
+                    {/* Header */}
+                    <div className="text-center">
+                      <div className="inline-flex p-3 rounded-xl gold-gradient mb-4">
+                        <Phone className="w-6 h-6 text-primary-foreground" />
+                      </div>
+                      <h3 className="font-display text-2xl font-bold text-foreground">
+                        Enter Mobile Number
+                      </h3>
+                      <p className="text-muted-foreground text-sm mt-1">
+                        We'll send you a one-time password
+                      </p>
+                    </div>
 
-              <div className="space-y-2">
-                {[
-                  "🔐 Secured by Internet Computer blockchain",
-                  "🏦 Bank-grade security for your assets",
-                  "⚡ Instant login, no passwords needed",
-                ].map((item) => (
-                  <p
-                    key={item}
-                    className="text-xs text-muted-foreground flex items-start gap-2"
+                    {/* Mobile input */}
+                    <div className="space-y-2">
+                      <label
+                        htmlFor="mobile-input"
+                        className="text-sm font-medium text-foreground"
+                      >
+                        Mobile Number
+                      </label>
+                      <div className="flex gap-0 rounded-lg border-2 border-border bg-input focus-within:border-primary transition-colors overflow-hidden">
+                        <div className="flex items-center px-3 bg-muted/50 border-r border-border">
+                          <span className="text-sm font-semibold text-foreground">
+                            +91
+                          </span>
+                        </div>
+                        <input
+                          id="mobile-input"
+                          type="tel"
+                          inputMode="numeric"
+                          placeholder="Enter 10-digit number"
+                          value={mobile}
+                          onChange={(e) => {
+                            const val = e.target.value
+                              .replace(/\D/g, "")
+                              .slice(0, 10);
+                            setMobile(val);
+                            setMobileError("");
+                          }}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") handleSendOTP();
+                          }}
+                          className="flex-1 bg-transparent px-3 py-3 text-sm text-foreground placeholder:text-muted-foreground outline-none"
+                          autoComplete="tel"
+                        />
+                      </div>
+                      {mobileError && (
+                        <p className="text-xs text-destructive font-medium">
+                          {mobileError}
+                        </p>
+                      )}
+                    </div>
+
+                    <Button
+                      onClick={handleSendOTP}
+                      disabled={isSending || mobile.length !== 10}
+                      className="w-full gold-gradient text-primary-foreground border-0 font-semibold text-base h-12 shadow-gold hover:opacity-90 transition-opacity"
+                    >
+                      {isSending ? (
+                        <>
+                          <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                          Sending OTP...
+                        </>
+                      ) : (
+                        <>
+                          <Phone className="w-4 h-4 mr-2" />
+                          Send OTP
+                        </>
+                      )}
+                    </Button>
+
+                    <div className="space-y-2">
+                      {[
+                        "🔐 Secured by Internet Computer blockchain",
+                        "🏦 Bank-grade security for your assets",
+                        "⚡ Instant login with OTP",
+                      ].map((item) => (
+                        <p
+                          key={item}
+                          className="text-xs text-muted-foreground flex items-start gap-2"
+                        >
+                          <span className="text-base leading-none">
+                            {item.slice(0, 2)}
+                          </span>
+                          <span>{item.slice(3)}</span>
+                        </p>
+                      ))}
+                    </div>
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key="step2"
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: 20 }}
+                    transition={{ duration: 0.3 }}
+                    className="p-8 space-y-6"
                   >
-                    <span className="text-base leading-none">
-                      {item.slice(0, 2)}
-                    </span>
-                    <span>{item.slice(3)}</span>
-                  </p>
-                ))}
-              </div>
+                    {/* Header */}
+                    <div className="text-center">
+                      <div className="inline-flex p-3 rounded-xl gold-gradient mb-4">
+                        <Shield className="w-6 h-6 text-primary-foreground" />
+                      </div>
+                      <h3 className="font-display text-2xl font-bold text-foreground">
+                        Enter OTP
+                      </h3>
+                      <p className="text-muted-foreground text-sm mt-1">
+                        Enter the 6-digit code sent to{" "}
+                        <span className="text-foreground font-medium">
+                          +91 {mobile}
+                        </span>
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setStep(1);
+                          setOtpDigits(Array(6).fill(""));
+                          setError("");
+                        }}
+                        className="text-xs text-primary hover:underline mt-1 font-medium"
+                      >
+                        Change number
+                      </button>
+                    </div>
+
+                    {/* OTP info box (demo mode) */}
+                    {displayOTP && (
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className="flex items-start gap-2.5 bg-blue-500/10 border border-blue-500/30 rounded-lg p-3"
+                      >
+                        <Info className="w-4 h-4 text-blue-400 flex-shrink-0 mt-0.5" />
+                        <div className="text-sm">
+                          <p className="text-blue-300 font-medium">Demo Mode</p>
+                          <p className="text-blue-200/80 text-xs mt-0.5">
+                            Your OTP:{" "}
+                            <span className="font-bold text-blue-100 tracking-widest text-base">
+                              {displayOTP}
+                            </span>
+                          </p>
+                        </div>
+                      </motion.div>
+                    )}
+
+                    {/* 6-digit OTP boxes */}
+                    <div className="space-y-2">
+                      <p className="text-sm font-medium text-foreground">
+                        One-Time Password
+                      </p>
+                      <fieldset
+                        className="flex gap-2 justify-center border-0 p-0 m-0"
+                        aria-label="Enter 6-digit OTP"
+                      >
+                        {(["d0", "d1", "d2", "d3", "d4", "d5"] as const).map(
+                          (key, idx) => (
+                            <input
+                              key={key}
+                              ref={(el) => {
+                                digitRefs.current[idx] = el;
+                              }}
+                              type="tel"
+                              inputMode="numeric"
+                              maxLength={1}
+                              value={otpDigits[idx]}
+                              onChange={(e) =>
+                                handleDigitChange(idx, e.target.value)
+                              }
+                              onKeyDown={(e) => handleDigitKeyDown(idx, e)}
+                              onPaste={idx === 0 ? handleDigitPaste : undefined}
+                              className={`w-11 h-14 text-center text-xl font-bold rounded-lg outline-none transition-all border-2
+                              ${otpDigits[idx] ? "border-primary bg-primary/10 text-foreground" : "border-border bg-input text-foreground"}
+                              focus:border-primary focus:ring-2 focus:ring-primary/20
+                              ${error ? "border-destructive" : ""}
+                            `}
+                              aria-label={`OTP digit ${idx + 1}`}
+                            />
+                          ),
+                        )}
+                      </fieldset>
+                      {error && (
+                        <p className="text-xs text-destructive font-medium text-center">
+                          {error}
+                        </p>
+                      )}
+                    </div>
+
+                    {/* Verify button */}
+                    <Button
+                      onClick={handleVerify}
+                      disabled={!allDigitsFilled || isVerifying}
+                      className="w-full gold-gradient text-primary-foreground border-0 font-semibold text-base h-12 shadow-gold hover:opacity-90 transition-opacity disabled:opacity-50"
+                    >
+                      {isVerifying ? (
+                        <>
+                          <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                          Verifying...
+                        </>
+                      ) : (
+                        <>
+                          <Shield className="w-4 h-4 mr-2" />
+                          Verify &amp; Login
+                        </>
+                      )}
+                    </Button>
+
+                    {/* Resend */}
+                    <div className="text-center">
+                      {resendTimer > 0 ? (
+                        <p className="text-xs text-muted-foreground">
+                          Resend OTP in{" "}
+                          <span className="text-primary font-semibold">
+                            {resendTimer}s
+                          </span>
+                        </p>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={handleResend}
+                          className="text-xs text-primary hover:underline font-medium"
+                        >
+                          Resend OTP
+                        </button>
+                      )}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </CardContent>
           </Card>
 

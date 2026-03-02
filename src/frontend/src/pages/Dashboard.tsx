@@ -3,13 +3,13 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useInternetIdentity } from "@/hooks/useInternetIdentity";
 import {
   useBroadcastNotices,
   useClaimROI,
   useUserData,
   useUserProfile,
 } from "@/hooks/useQueries";
+import { useUserId } from "@/hooks/useUserId";
 import {
   canClaimROI,
   formatINR,
@@ -45,8 +45,7 @@ const fadeUp = {
 };
 
 export function Dashboard() {
-  const { identity } = useInternetIdentity();
-  const userId = identity?.getPrincipal().toString();
+  const userId = useUserId();
   const { data: profile } = useUserProfile();
   const { data: userData, isLoading } = useUserData(userId);
   const claimMutation = useClaimROI(userId);

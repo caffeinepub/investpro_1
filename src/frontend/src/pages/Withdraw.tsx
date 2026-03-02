@@ -4,12 +4,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { useInternetIdentity } from "@/hooks/useInternetIdentity";
 import {
   useRequestWithdrawal,
   useUserData,
   useUserProfile,
 } from "@/hooks/useQueries";
+import { useUserId } from "@/hooks/useUserId";
 import { notifyWhatsApp } from "@/lib/whatsappNotify";
 import { formatINR } from "@/store/investmentStore";
 import type { WithdrawalRequest } from "@/store/investmentStore";
@@ -53,8 +53,7 @@ function StatusBadge({ status }: { status: WithdrawalRequest["status"] }) {
 }
 
 export function Withdraw() {
-  const { identity } = useInternetIdentity();
-  const userId = identity?.getPrincipal().toString();
+  const userId = useUserId();
   const { data: profile } = useUserProfile();
   const { data: userData } = useUserData(userId);
   const withdrawMutation = useRequestWithdrawal(

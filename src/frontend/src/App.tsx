@@ -1,15 +1,15 @@
 import { AppLayout } from "@/components/layout/AppLayout";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import { Toaster } from "@/components/ui/sonner";
 import { useInternetIdentity } from "@/hooks/useInternetIdentity";
-import {
-  useIsAdmin,
-  useRegisterUserMeta,
-  useUserProfile,
-} from "@/hooks/useQueries";
+import { useRegisterUserMeta, useUserProfile } from "@/hooks/useQueries";
 import { Admin } from "@/pages/Admin";
 import { BankProfile } from "@/pages/BankProfile";
 import { Dashboard } from "@/pages/Dashboard";
 import { Deposit } from "@/pages/Deposit";
+import { InstallApp, shouldShowInstallScreen } from "@/pages/InstallApp";
 import { Login } from "@/pages/Login";
 import { Plans } from "@/pages/Plans";
 import { Referrals } from "@/pages/Referrals";
@@ -17,6 +17,7 @@ import { Settings } from "@/pages/Settings";
 import { Transactions } from "@/pages/Transactions";
 import { Withdraw } from "@/pages/Withdraw";
 import { registerWithReferral } from "@/store/investmentStore";
+import { getMobileSession } from "@/utils/mobileAuth";
 import {
   Navigate,
   Outlet,
@@ -25,12 +26,14 @@ import {
   createRoute,
   createRouter,
 } from "@tanstack/react-router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 // ── Guard components ──────────────────────────────────────────
 
 function AuthGuard({ children }: { children: React.ReactNode }) {
-  const { identity, isInitializing } = useInternetIdentity();
+  const { identity, loginStatus, isInitializing } = useInternetIdentity();
+  const [installDismissed, setInstallDismissed] = useState(false);
+  const mobileUser = getMobileSession();
 
   if (isInitializing) {
     return (
@@ -47,36 +50,80 @@ function AuthGuard({ children }: { children: React.ReactNode }) {
     );
   }
 
-  if (!identity) {
+  if (!identity && !mobileUser) {
     return <Login />;
+  }
+
+  // After a fresh sign-in (loginStatus === "success" for Internet Identity) or mobile login,
+  // show install screen once per device
+  const isNewLogin = loginStatus === "success" || !!mobileUser;
+  if (isNewLogin && !installDismissed && shouldShowInstallScreen()) {
+    return <InstallApp onContinue={() => setInstallDismissed(true)} />;
   }
 
   return <>{children}</>;
 }
 
-function AdminGuard({ children }: { children: React.ReactNode }) {
-  const { data: isAdmin, isLoading } = useIsAdmin();
+function AdminPasswordGate({ children }: { children: React.ReactNode }) {
+  const [authed, setAuthed] = useState(
+    () => sessionStorage.getItem("adminAuth") === "true",
+  );
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
-  if (isLoading) {
-    return (
-      <div className="p-8 text-center text-muted-foreground text-sm">
-        Checking permissions...
-      </div>
-    );
-  }
+  if (authed) return <>{children}</>;
 
-  if (!isAdmin) {
-    return (
-      <div className="p-8 text-center">
-        <p className="text-destructive font-medium">Access Denied</p>
-        <p className="text-muted-foreground text-sm mt-1">
-          You don't have admin privileges.
-        </p>
-      </div>
-    );
-  }
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (password === "admin123") {
+      sessionStorage.setItem("adminAuth", "true");
+      setAuthed(true);
+      setError("");
+    } else {
+      setError("Incorrect password");
+    }
+  };
 
-  return <>{children}</>;
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-background p-4">
+      <Card className="w-full max-w-sm border-border shadow-2xl">
+        <CardHeader className="items-center pb-4 pt-8">
+          <img
+            src="/assets/generated/investpro-logo-transparent.dim_120x120.png"
+            alt="InvestPro"
+            className="w-14 h-14 object-contain mb-3"
+          />
+          <CardTitle className="text-xl font-semibold text-foreground">
+            Admin Panel
+          </CardTitle>
+          <p className="text-sm text-muted-foreground mt-1">
+            Enter your admin password to continue
+          </p>
+        </CardHeader>
+        <CardContent className="pb-8">
+          <form onSubmit={handleLogin} className="space-y-4">
+            <Input
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => {
+                setPassword(e.target.value);
+                setError("");
+              }}
+              className="bg-input border-border"
+              autoFocus
+            />
+            {error && (
+              <p className="text-sm text-destructive font-medium">{error}</p>
+            )}
+            <Button type="submit" className="w-full">
+              Login
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
+    </div>
+  );
 }
 
 function UserRegistrar() {
@@ -84,20 +131,25 @@ function UserRegistrar() {
   const { data: profile } = useUserProfile();
   const registerMeta = useRegisterUserMeta();
   const principalStr = identity?.getPrincipal().toString();
+  const mobileUser = getMobileSession();
+  const effectiveUserId = principalStr || mobileUser || null;
   const { mutate } = registerMeta;
 
   useEffect(() => {
-    if (identity && profile?.name && principalStr) {
-      mutate({ userId: principalStr, name: profile.name });
+    if (effectiveUserId) {
+      // For mobile users, use mobile number as name if no profile
+      const displayName =
+        profile?.name || (mobileUser ? `User ${mobileUser}` : effectiveUserId);
+      mutate({ userId: effectiveUserId, name: displayName });
 
       // Apply pending referral code if any
       const pendingRef = sessionStorage.getItem("pending_referral");
-      if (pendingRef && pendingRef !== principalStr) {
-        registerWithReferral(principalStr, pendingRef);
+      if (pendingRef && pendingRef !== effectiveUserId) {
+        registerWithReferral(effectiveUserId, pendingRef);
         sessionStorage.removeItem("pending_referral");
       }
     }
-  }, [identity, profile?.name, principalStr, mutate]);
+  }, [effectiveUserId, profile?.name, mobileUser, mutate]);
 
   // On first load, capture ?ref= param before login
   useEffect(() => {
@@ -196,9 +248,9 @@ const adminRoute = createRoute({
   getParentRoute: () => protectedRoute,
   path: "/admin",
   component: () => (
-    <AdminGuard>
+    <AdminPasswordGate>
       <Admin />
-    </AdminGuard>
+    </AdminPasswordGate>
   ),
 });
 

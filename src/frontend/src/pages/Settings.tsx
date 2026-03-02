@@ -17,6 +17,8 @@ import {
   useUserData,
   useUserProfile,
 } from "@/hooks/useQueries";
+import { useUserId } from "@/hooks/useUserId";
+import { clearMobileSession } from "@/utils/mobileAuth";
 import { Link } from "@tanstack/react-router";
 import {
   Building2,
@@ -32,8 +34,8 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 export function Settings() {
-  const { identity, clear } = useInternetIdentity();
-  const userId = identity?.getPrincipal().toString();
+  const { clear } = useInternetIdentity();
+  const userId = useUserId();
   const { data: profile, isLoading } = useUserProfile();
   const { data: userData } = useUserData(userId);
   const saveProfileMutation = useSaveProfile();
@@ -227,7 +229,11 @@ export function Settings() {
             <Button
               variant="ghost"
               className="w-full justify-start gap-3 text-destructive hover:text-destructive hover:bg-destructive/10"
-              onClick={clear}
+              onClick={() => {
+                clearMobileSession();
+                clear();
+                window.location.reload();
+              }}
             >
               <LogOut className="w-4 h-4" />
               Sign Out
