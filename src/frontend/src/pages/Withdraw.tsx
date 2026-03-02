@@ -11,13 +11,18 @@ import {
 } from "@/hooks/useQueries";
 import { useUserId } from "@/hooks/useUserId";
 import { notifyWhatsApp } from "@/lib/whatsappNotify";
-import { formatINR } from "@/store/investmentStore";
+import {
+  formatINR,
+  getWithdrawalBlockedMessage,
+  isWithdrawalAllowedToday,
+} from "@/store/investmentStore";
 import type { WithdrawalRequest } from "@/store/investmentStore";
 import { Link } from "@tanstack/react-router";
 import {
   AlertTriangle,
   ArrowUpCircle,
   Building2,
+  CalendarX,
   CheckCircle2,
   Clock,
   Loader2,
@@ -62,6 +67,9 @@ export function Withdraw() {
   );
 
   const [amount, setAmount] = useState("");
+
+  const withdrawalAllowed = isWithdrawalAllowedToday();
+  const blockedMessage = getWithdrawalBlockedMessage();
 
   const balance = userData?.wallet.balance ?? 0;
   const bankLinked = userData?.bankProfile.isLinked ?? false;
@@ -119,6 +127,55 @@ export function Withdraw() {
           </div>
         </div>
       </motion.div>
+
+      {/* Sunday / Monday block banner */}
+      {!withdrawalAllowed && (
+        <motion.div
+          className="mb-6"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.05 }}
+        >
+          <Card className="border-destructive/40 bg-destructive/8">
+            <CardContent className="p-5 flex items-start gap-4">
+              <div className="p-2 bg-destructive/15 rounded-lg flex-shrink-0">
+                <CalendarX className="w-5 h-5 text-destructive" />
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-destructive mb-1">
+                  Withdrawals Unavailable Today
+                </p>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  {blockedMessage}
+                </p>
+                <div className="flex gap-1 mt-3 flex-wrap">
+                  {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map(
+                    (d, i) => {
+                      const today = new Date().getDay();
+                      const isBlocked = i === 0 || i === 1;
+                      const isToday = i === today;
+                      return (
+                        <span
+                          key={d}
+                          className={`text-[10px] font-medium px-2 py-0.5 rounded-full border ${
+                            isToday
+                              ? "bg-destructive/20 border-destructive/40 text-destructive"
+                              : isBlocked
+                                ? "bg-muted/60 border-border/50 text-muted-foreground line-through"
+                                : "bg-chart-2/10 border-chart-2/30 text-chart-2"
+                          }`}
+                        >
+                          {d}
+                        </span>
+                      );
+                    },
+                  )}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+      )}
 
       {/* Balance */}
       <motion.div
@@ -193,7 +250,9 @@ export function Withdraw() {
         transition={{ delay: 0.2 }}
         className="mb-8"
       >
-        <Card className={`border-border/50 ${!bankLinked ? "opacity-60" : ""}`}>
+        <Card
+          className={`border-border/50 ${!bankLinked || !withdrawalAllowed ? "opacity-60" : ""}`}
+        >
           <CardHeader>
             <CardTitle className="font-display text-lg">
               Request Withdrawal
@@ -218,7 +277,7 @@ export function Withdraw() {
                     className="pl-7 bg-input/50 border-border/60 focus:border-primary"
                     min="100"
                     max={effectiveMax}
-                    disabled={!bankLinked}
+                    disabled={!bankLinked || !withdrawalAllowed}
                   />
                 </div>
                 <div className="flex justify-between mt-1">
@@ -227,7 +286,7 @@ export function Withdraw() {
                     type="button"
                     className="text-xs text-primary hover:underline"
                     onClick={() => setAmount(String(effectiveMax))}
-                    disabled={!bankLinked}
+                    disabled={!bankLinked || !withdrawalAllowed}
                   >
                     Max: {formatINR(effectiveMax)}
                   </button>
@@ -260,7 +319,12 @@ export function Withdraw() {
               <Button
                 type="submit"
                 className="w-full font-semibold gap-2"
-                disabled={!bankLinked || !isValid || withdrawMutation.isPending}
+                disabled={
+                  !bankLinked ||
+                  !isValid ||
+                  withdrawMutation.isPending ||
+                  !withdrawalAllowed
+                }
               >
                 {withdrawMutation.isPending ? (
                   <Loader2 className="w-4 h-4 animate-spin" />

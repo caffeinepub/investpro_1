@@ -1,3 +1,7 @@
+import {
+  EnterReferralCode,
+  shouldShowReferralCard,
+} from "@/components/EnterReferralCode";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -52,6 +56,9 @@ export function Dashboard() {
   const { data: notices = [] } = useBroadcastNotices();
   const [dismissedNotices, setDismissedNotices] = useState<Set<string>>(
     new Set(),
+  );
+  const [showReferralCard, setShowReferralCard] = useState(() =>
+    userId ? shouldShowReferralCard(userId) : false,
   );
 
   const visibleNotices = notices.filter((n) => !dismissedNotices.has(n.id));
@@ -160,6 +167,16 @@ export function Dashboard() {
               );
             })}
           </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Referral Code Entry Card */}
+      <AnimatePresence>
+        {showReferralCard && userId && (
+          <EnterReferralCode
+            userId={userId}
+            onDismiss={() => setShowReferralCard(false)}
+          />
         )}
       </AnimatePresence>
 

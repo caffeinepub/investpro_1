@@ -16,7 +16,11 @@ import { Referrals } from "@/pages/Referrals";
 import { Settings } from "@/pages/Settings";
 import { Transactions } from "@/pages/Transactions";
 import { Withdraw } from "@/pages/Withdraw";
-import { registerWithReferral } from "@/store/investmentStore";
+import {
+  getOrCreateShortCode,
+  lookupUserByShortCode,
+  registerWithReferral,
+} from "@/store/investmentStore";
 import { getMobileSession } from "@/utils/mobileAuth";
 import {
   Navigate,
@@ -142,10 +146,21 @@ function UserRegistrar() {
         profile?.name || (mobileUser ? `User ${mobileUser}` : effectiveUserId);
       mutate({ userId: effectiveUserId, name: displayName });
 
+      // Ensure user's own short code is created
+      getOrCreateShortCode(effectiveUserId);
+
       // Apply pending referral code if any
       const pendingRef = sessionStorage.getItem("pending_referral");
       if (pendingRef && pendingRef !== effectiveUserId) {
-        registerWithReferral(effectiveUserId, pendingRef);
+        // Try to resolve short code first (short codes are <= 8 chars)
+        const resolvedRef =
+          pendingRef.length <= 8
+            ? lookupUserByShortCode(pendingRef)
+            : pendingRef;
+        const finalRef = resolvedRef || pendingRef;
+        if (finalRef !== effectiveUserId) {
+          registerWithReferral(effectiveUserId, finalRef);
+        }
         sessionStorage.removeItem("pending_referral");
       }
     }

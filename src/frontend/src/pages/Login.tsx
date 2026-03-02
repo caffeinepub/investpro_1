@@ -3,15 +3,19 @@ import { Card, CardContent } from "@/components/ui/card";
 import {
   checkDeviceLock,
   getAutoLoginMobile,
+  getLastOtp,
   getSavedMobile,
+  isLockedOut,
   sendOTP,
   verifyOTP,
 } from "@/utils/mobileAuth";
 import {
+  AlertTriangle,
   BarChart3,
   CheckCircle2,
-  Info,
+  Clock,
   Loader2,
+  Lock,
   Phone,
   Shield,
   TrendingUp,
@@ -54,12 +58,14 @@ export function Login() {
   });
   const [mobileError, setMobileError] = useState("");
   const [otpDigits, setOtpDigits] = useState<string[]>(Array(6).fill(""));
-  const [displayOTP, setDisplayOTP] = useState("");
   const [resendTimer, setResendTimer] = useState(RESEND_TIMEOUT);
   const [isVerifying, setIsVerifying] = useState(false);
   const [isSending, setIsSending] = useState(false);
   const [error, setError] = useState("");
+  const [attemptsLeft, setAttemptsLeft] = useState<number | null>(null);
+  const [lockoutRemaining, setLockoutRemaining] = useState(0);
   const [autoLoggingIn, setAutoLoggingIn] = useState(false);
+  const [shownOtp, setShownOtp] = useState("");
 
   // Auto-login: if this device already verified, restore session and redirect
   useEffect(() => {
@@ -92,10 +98,35 @@ export function Login() {
     return () => clearInterval(id);
   }, [step, resendTimer]);
 
+  // Lockout countdown
+  useEffect(() => {
+    if (lockoutRemaining <= 0) return;
+    const id = setInterval(() => {
+      setLockoutRemaining((t) => {
+        if (t <= 1000) {
+          clearInterval(id);
+          return 0;
+        }
+        return t - 1000;
+      });
+    }, 1000);
+    return () => clearInterval(id);
+  }, [lockoutRemaining]);
+
   const handleSendOTP = useCallback(() => {
     const cleaned = mobile.replace(/\D/g, "");
     if (cleaned.length !== 10) {
       setMobileError("Please enter a valid 10-digit mobile number");
+      return;
+    }
+    // Check lockout
+    const lockCheck = isLockedOut(cleaned);
+    if (lockCheck.locked) {
+      const mins = Math.ceil(lockCheck.remainingMs / 60000);
+      setMobileError(
+        `Account locked. Try again in ${mins} minute${mins !== 1 ? "s" : ""}.`,
+      );
+      setLockoutRemaining(lockCheck.remainingMs);
       return;
     }
     // Check if this number is locked to another device
@@ -106,26 +137,26 @@ export function Login() {
     }
     setMobileError("");
     setIsSending(true);
-    // Small delay to simulate async
     setTimeout(() => {
-      const otp = sendOTP(cleaned);
-      setDisplayOTP(otp);
+      sendOTP(cleaned);
+      setShownOtp(getLastOtp());
       setOtpDigits(Array(6).fill(""));
       setError("");
+      setAttemptsLeft(null);
       setResendTimer(RESEND_TIMEOUT);
       setStep(2);
       setIsSending(false);
-      // Auto-focus first digit box after render
       setTimeout(() => digitRefs.current[0]?.focus(), 100);
     }, 400);
   }, [mobile]);
 
   const handleResend = useCallback(() => {
     const cleaned = mobile.replace(/\D/g, "");
-    const otp = sendOTP(cleaned);
-    setDisplayOTP(otp);
+    sendOTP(cleaned);
+    setShownOtp(getLastOtp());
     setOtpDigits(Array(6).fill(""));
     setError("");
+    setAttemptsLeft(null);
     setResendTimer(RESEND_TIMEOUT);
     setTimeout(() => digitRefs.current[0]?.focus(), 50);
   }, [mobile]);
@@ -186,7 +217,13 @@ export function Login() {
       } else {
         setError(result.message);
         setIsVerifying(false);
-        // Shake the inputs by clearing them
+        if (result.attemptsLeft !== undefined) {
+          setAttemptsLeft(result.attemptsLeft);
+        }
+        if (result.attemptsLeft === 0) {
+          const lock = isLockedOut(cleaned);
+          if (lock.locked) setLockoutRemaining(lock.remainingMs);
+        }
         setOtpDigits(Array(6).fill(""));
         setTimeout(() => digitRefs.current[0]?.focus(), 50);
       }
@@ -422,9 +459,9 @@ export function Login() {
 
                     <div className="space-y-2">
                       {[
-                        "🔐 Secured by Internet Computer blockchain",
-                        "🏦 Bank-grade security for your assets",
-                        "⚡ Instant login with OTP",
+                        "🔐 One number locked to one device only",
+                        "🛡️ Brute-force protection with auto-lockout",
+                        "⚡ Returning device auto-login, no OTP needed",
                       ].map((item) => (
                         <p
                           key={item}
@@ -474,25 +511,64 @@ export function Login() {
                       </button>
                     </div>
 
-                    {/* OTP info box (demo mode) */}
-                    {displayOTP && (
+                    {/* OTP display box */}
+                    {shownOtp && (
                       <motion.div
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
-                        className="flex items-start gap-2.5 bg-blue-500/10 border border-blue-500/30 rounded-lg p-3"
+                        className="flex items-center justify-between bg-blue-500/10 border border-blue-500/30 rounded-lg p-3"
                       >
-                        <Info className="w-4 h-4 text-blue-400 flex-shrink-0 mt-0.5" />
+                        <p className="text-sm text-blue-300 font-medium">
+                          Your OTP:
+                        </p>
+                        <p className="text-xl font-bold tracking-[0.3em] text-blue-200">
+                          {shownOtp}
+                        </p>
+                      </motion.div>
+                    )}
+
+                    {/* Lockout warning */}
+                    {lockoutRemaining > 0 && (
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className="flex items-start gap-2.5 bg-destructive/10 border border-destructive/30 rounded-lg p-3"
+                      >
+                        <Lock className="w-4 h-4 text-destructive flex-shrink-0 mt-0.5" />
                         <div className="text-sm">
-                          <p className="text-blue-300 font-medium">Demo Mode</p>
-                          <p className="text-blue-200/80 text-xs mt-0.5">
-                            Your OTP:{" "}
-                            <span className="font-bold text-blue-100 tracking-widest text-base">
-                              {displayOTP}
-                            </span>
+                          <p className="text-destructive font-semibold">
+                            Account Locked
+                          </p>
+                          <p className="text-destructive/80 text-xs mt-0.5 flex items-center gap-1">
+                            <Clock className="w-3 h-3" />
+                            Unlocks in {Math.ceil(lockoutRemaining / 60000)} min{" "}
+                            {Math.floor((lockoutRemaining % 60000) / 1000)}s
                           </p>
                         </div>
                       </motion.div>
                     )}
+                    {/* Attempts warning */}
+                    {attemptsLeft !== null &&
+                      attemptsLeft > 0 &&
+                      lockoutRemaining === 0 && (
+                        <motion.div
+                          initial={{ opacity: 0, scale: 0.95 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          className="flex items-start gap-2.5 bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-3"
+                        >
+                          <AlertTriangle className="w-4 h-4 text-yellow-400 flex-shrink-0 mt-0.5" />
+                          <div className="text-sm">
+                            <p className="text-yellow-300 font-medium">
+                              Warning
+                            </p>
+                            <p className="text-yellow-200/80 text-xs mt-0.5">
+                              {attemptsLeft} attempt
+                              {attemptsLeft !== 1 ? "s" : ""} remaining before
+                              10-minute lockout
+                            </p>
+                          </div>
+                        </motion.div>
+                      )}
 
                     {/* 6-digit OTP boxes */}
                     <div className="space-y-2">
@@ -539,7 +615,9 @@ export function Login() {
                     {/* Verify button */}
                     <Button
                       onClick={handleVerify}
-                      disabled={!allDigitsFilled || isVerifying}
+                      disabled={
+                        !allDigitsFilled || isVerifying || lockoutRemaining > 0
+                      }
                       className="w-full gold-gradient text-primary-foreground border-0 font-semibold text-base h-12 shadow-gold hover:opacity-90 transition-opacity disabled:opacity-50"
                     >
                       {isVerifying ? (

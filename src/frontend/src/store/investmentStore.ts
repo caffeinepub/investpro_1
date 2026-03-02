@@ -8,9 +8,22 @@ export type PlanId =
   | "gold"
   | "diamond"
   | "platinum"
-  | "elite"
-  | "vip"
-  | "royal";
+  | "basic"
+  | "pro"
+  | "supreme"
+  // Normal Business plans
+  | "nb_bronze"
+  | "nb_silver"
+  | "nb_gold"
+  | "nb_premium"
+  | "nb_elite"
+  // VIP plans
+  | "vip_silver"
+  | "vip_gold"
+  | "vip_platinum"
+  | "vip_diamond"
+  | "vip_black"
+  | "vip_royal";
 
 export interface Investment {
   id: string;
@@ -82,9 +95,9 @@ export const INVESTMENT_PLANS = {
     id: "mini" as const,
     name: "Mini",
     amountInvested: 500,
-    dailyReturn: 164,
+    dailyReturn: 83,
     termDays: 15,
-    totalReturn: 2460,
+    totalReturn: 1250,
     color: "chart-2",
     description: "Start small, grow big",
   },
@@ -92,9 +105,9 @@ export const INVESTMENT_PLANS = {
     id: "starter" as const,
     name: "Starter",
     amountInvested: 1000,
-    dailyReturn: 330,
+    dailyReturn: 167,
     termDays: 15,
-    totalReturn: 4950,
+    totalReturn: 2500,
     color: "chart-3",
     description: "Perfect for beginners",
   },
@@ -102,9 +115,9 @@ export const INVESTMENT_PLANS = {
     id: "silver" as const,
     name: "Silver",
     amountInvested: 5000,
-    dailyReturn: 1650,
+    dailyReturn: 833,
     termDays: 15,
-    totalReturn: 24750,
+    totalReturn: 12500,
     color: "chart-2",
     description: "For serious investors",
   },
@@ -112,9 +125,9 @@ export const INVESTMENT_PLANS = {
     id: "gold" as const,
     name: "Gold",
     amountInvested: 10000,
-    dailyReturn: 3300,
+    dailyReturn: 1667,
     termDays: 15,
-    totalReturn: 49500,
+    totalReturn: 25000,
     color: "gold",
     description: "Maximum returns",
   },
@@ -122,9 +135,9 @@ export const INVESTMENT_PLANS = {
     id: "diamond" as const,
     name: "Diamond",
     amountInvested: 25000,
-    dailyReturn: 8250,
+    dailyReturn: 4167,
     termDays: 15,
-    totalReturn: 123750,
+    totalReturn: 62500,
     color: "cyan",
     description: "Elite growth tier",
   },
@@ -132,41 +145,153 @@ export const INVESTMENT_PLANS = {
     id: "platinum" as const,
     name: "Platinum",
     amountInvested: 50000,
-    dailyReturn: 16500,
+    dailyReturn: 8333,
     termDays: 15,
-    totalReturn: 247500,
+    totalReturn: 125000,
     color: "violet",
     description: "Accelerated wealth",
   },
-  elite: {
-    id: "elite" as const,
-    name: "Elite",
-    amountInvested: 100000,
-    dailyReturn: 33000,
+  basic: {
+    id: "basic" as const,
+    name: "Basic",
+    amountInvested: 2000,
+    dailyReturn: 333,
     termDays: 15,
-    totalReturn: 495000,
-    color: "rose",
-    description: "High-performance investing",
+    totalReturn: 5000,
+    color: "blue",
+    description: "Simple and steady growth",
   },
-  vip: {
-    id: "vip" as const,
-    name: "VIP",
-    amountInvested: 250000,
-    dailyReturn: 82500,
+  pro: {
+    id: "pro" as const,
+    name: "Pro",
+    amountInvested: 3000,
+    dailyReturn: 500,
     termDays: 15,
-    totalReturn: 1237500,
+    totalReturn: 7500,
+    color: "purple",
+    description: "Professional-grade returns",
+  },
+  supreme: {
+    id: "supreme" as const,
+    name: "Supreme",
+    amountInvested: 7500,
+    dailyReturn: 1250,
+    termDays: 15,
+    totalReturn: 18750,
+    color: "indigo",
+    description: "Supreme value for smart investors",
+  },
+  // ── Normal Business Plans ────────────────────────────────
+  nb_bronze: {
+    id: "nb_bronze" as const,
+    name: "NB Bronze",
+    amountInvested: 1500,
+    dailyReturn: 250,
+    termDays: 15,
+    totalReturn: 3750,
     color: "orange",
-    description: "Exclusive VIP returns",
+    description: "Normal Business entry plan",
   },
-  royal: {
-    id: "royal" as const,
-    name: "Royal",
-    amountInvested: 500000,
-    dailyReturn: 165000,
+  nb_silver: {
+    id: "nb_silver" as const,
+    name: "NB Silver",
+    amountInvested: 4000,
+    dailyReturn: 667,
     termDays: 15,
-    totalReturn: 2475000,
-    color: "gold",
-    description: "The ultimate investment",
+    totalReturn: 10000,
+    color: "slate",
+    description: "Steady business growth",
+  },
+  nb_gold: {
+    id: "nb_gold" as const,
+    name: "NB Gold",
+    amountInvested: 8000,
+    dailyReturn: 1333,
+    termDays: 15,
+    totalReturn: 20000,
+    color: "yellow",
+    description: "Business gold tier returns",
+  },
+  nb_premium: {
+    id: "nb_premium" as const,
+    name: "NB Premium",
+    amountInvested: 15000,
+    dailyReturn: 2500,
+    termDays: 15,
+    totalReturn: 37500,
+    color: "emerald",
+    description: "Premium business accelerator",
+  },
+  nb_elite: {
+    id: "nb_elite" as const,
+    name: "NB Elite",
+    amountInvested: 30000,
+    dailyReturn: 5000,
+    termDays: 15,
+    totalReturn: 75000,
+    color: "teal",
+    description: "Elite business wealth builder",
+  },
+  // ── VIP Plans ────────────────────────────────────────────
+  vip_silver: {
+    id: "vip_silver" as const,
+    name: "VIP Silver",
+    amountInvested: 20000,
+    dailyReturn: 3333,
+    termDays: 15,
+    totalReturn: 50000,
+    color: "gray",
+    description: "VIP entry — exclusive returns",
+  },
+  vip_gold: {
+    id: "vip_gold" as const,
+    name: "VIP Gold",
+    amountInvested: 40000,
+    dailyReturn: 6667,
+    termDays: 15,
+    totalReturn: 100000,
+    color: "amber",
+    description: "VIP gold — premium wealth",
+  },
+  vip_platinum: {
+    id: "vip_platinum" as const,
+    name: "VIP Platinum",
+    amountInvested: 75000,
+    dailyReturn: 12500,
+    termDays: 15,
+    totalReturn: 187500,
+    color: "cyan",
+    description: "VIP platinum — elite wealth",
+  },
+  vip_diamond: {
+    id: "vip_diamond" as const,
+    name: "VIP Diamond",
+    amountInvested: 150000,
+    dailyReturn: 25000,
+    termDays: 15,
+    totalReturn: 375000,
+    color: "sky",
+    description: "VIP diamond — ultra wealth",
+  },
+  vip_black: {
+    id: "vip_black" as const,
+    name: "VIP Black",
+    amountInvested: 300000,
+    dailyReturn: 50000,
+    termDays: 15,
+    totalReturn: 750000,
+    color: "zinc",
+    description: "VIP black card — prestige tier",
+  },
+  vip_royal: {
+    id: "vip_royal" as const,
+    name: "VIP Royal",
+    amountInvested: 500000,
+    dailyReturn: 83333,
+    termDays: 15,
+    totalReturn: 1250000,
+    color: "rose",
+    description: "VIP royal — supreme wealth",
   },
 };
 
@@ -759,7 +884,8 @@ export function formatINR(amount: number): string {
 
 export function getReferralLink(userId: string): string {
   const base = window.location.origin;
-  return `${base}?ref=${userId}`;
+  const code = getOrCreateShortCode(userId);
+  return `${base}?ref=${code}`;
 }
 
 export function registerWithReferral(
@@ -795,6 +921,90 @@ export function getReferralStats(
   return friends;
 }
 
+// ── Withdrawal day restriction ───────────────────────────────
+
+/**
+ * Returns true if withdrawals are allowed today.
+ * Withdrawals are BLOCKED on Sunday (0) and Monday (1).
+ */
+export function isWithdrawalAllowedToday(): boolean {
+  const day = new Date().getDay(); // 0=Sun, 1=Mon, ..., 6=Sat
+  return day !== 0 && day !== 1;
+}
+
+export function getWithdrawalBlockedMessage(): string {
+  const day = new Date().getDay();
+  if (day === 0)
+    return "Withdrawals are closed on Sundays. Please try again from Tuesday.";
+  if (day === 1)
+    return "Withdrawals are closed on Mondays. Please try again from Tuesday.";
+  return "";
+}
+
+// ── Short Referral Code ──────────────────────────────────────
+
+const SHORT_CODE_MAP_KEY = "__investpro_short_code_map__"; // userId -> shortCode
+const SHORT_CODE_REVERSE_KEY = "__investpro_short_code_reverse__"; // shortCode -> userId
+
+/** Generate or retrieve a user's short referral code (6 chars alphanumeric uppercase) */
+export function getOrCreateShortCode(userId: string): string {
+  const map = JSON.parse(
+    localStorage.getItem(SHORT_CODE_MAP_KEY) || "{}",
+  ) as Record<string, string>;
+  if (map[userId]) return map[userId];
+
+  // Deterministic generation from userId
+  let hash = 0;
+  for (let i = 0; i < userId.length; i++) {
+    hash = (hash << 5) - hash + userId.charCodeAt(i);
+    hash |= 0;
+  }
+  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  let code = "";
+  let h = Math.abs(hash);
+  for (let i = 0; i < 6; i++) {
+    code += chars[h % chars.length];
+    h = Math.floor(h / chars.length);
+    if (h === 0) h = Math.abs(hash * (i + 1337));
+  }
+
+  // Check collision
+  const reverse = JSON.parse(
+    localStorage.getItem(SHORT_CODE_REVERSE_KEY) || "{}",
+  ) as Record<string, string>;
+  let finalCode = code;
+  let suffix = 0;
+  while (reverse[finalCode] && reverse[finalCode] !== userId) {
+    finalCode = code.slice(0, 5) + chars[suffix % chars.length];
+    suffix++;
+  }
+
+  map[userId] = finalCode;
+  reverse[finalCode] = userId;
+  localStorage.setItem(SHORT_CODE_MAP_KEY, JSON.stringify(map));
+  localStorage.setItem(SHORT_CODE_REVERSE_KEY, JSON.stringify(reverse));
+  return finalCode;
+}
+
+export function lookupUserByShortCode(code: string): string | null {
+  const reverse = JSON.parse(
+    localStorage.getItem(SHORT_CODE_REVERSE_KEY) || "{}",
+  ) as Record<string, string>;
+  return reverse[code.toUpperCase().trim()] || null;
+}
+
+export function hasReferrer(userId: string): boolean {
+  const map = JSON.parse(
+    localStorage.getItem(REFERRAL_MAP_KEY) || "{}",
+  ) as Record<string, string>;
+  return !!map[userId];
+}
+
+// ── Multi-level Referral Bonus ───────────────────────────────
+// Level 1 (direct inviter)        → 10%
+// Level 2 (inviter of inviter)    →  7%
+// Level 3 (inviter of level-2)    →  1%
+
 export function creditReferralBonus(
   depositUserId: string,
   depositAmount: number,
@@ -802,31 +1012,54 @@ export function creditReferralBonus(
   const map = JSON.parse(
     localStorage.getItem(REFERRAL_MAP_KEY) || "{}",
   ) as Record<string, string>;
-  const referrerId = map[depositUserId];
-  if (!referrerId) return;
-  const bonus = Math.floor(depositAmount * 0.1);
-  if (bonus <= 0) return;
 
-  // Credit referrer's wallet
-  const referrerData = loadUserData(referrerId);
-  referrerData.wallet.balance += bonus;
-  referrerData.wallet.totalROIEarned += bonus;
-  referrerData.transactions.unshift({
-    id: `${Date.now()}_ref`,
-    type: "ROI",
-    amount: bonus,
-    description: "Referral bonus (10%) from friend deposit",
-    timestamp: Date.now(),
-    status: "Success",
-  });
-  saveUserData(referrerId, referrerData);
+  const levels: Array<{ pct: number; label: string }> = [
+    { pct: 0.1, label: "Referral bonus (Level 1 – 10%) from friend deposit" },
+    {
+      pct: 0.07,
+      label: "Referral bonus (Level 2 – 7%) from 2nd-level friend deposit",
+    },
+    {
+      pct: 0.01,
+      label: "Referral bonus (Level 3 – 1%) from 3rd-level friend deposit",
+    },
+  ];
 
-  // Track per-friend earnings
   const earnings = JSON.parse(
     localStorage.getItem(REFERRAL_EARNINGS_KEY) || "{}",
   ) as Record<string, Record<string, number>>;
-  if (!earnings[referrerId]) earnings[referrerId] = {};
-  earnings[referrerId][depositUserId] =
-    (earnings[referrerId][depositUserId] || 0) + bonus;
+
+  let currentUserId = depositUserId;
+  const now = Date.now();
+
+  for (const { pct, label } of levels) {
+    const referrerId = map[currentUserId];
+    if (!referrerId) break;
+
+    const bonus = Math.floor(depositAmount * pct);
+    if (bonus > 0) {
+      // Credit referrer's wallet
+      const referrerData = loadUserData(referrerId);
+      referrerData.wallet.balance += bonus;
+      referrerData.wallet.totalROIEarned += bonus;
+      referrerData.transactions.unshift({
+        id: `${now}_ref_${pct}`,
+        type: "ROI",
+        amount: bonus,
+        description: label,
+        timestamp: now,
+        status: "Success",
+      });
+      saveUserData(referrerId, referrerData);
+
+      // Track per-friend earnings
+      if (!earnings[referrerId]) earnings[referrerId] = {};
+      earnings[referrerId][depositUserId] =
+        (earnings[referrerId][depositUserId] || 0) + bonus;
+    }
+
+    currentUserId = referrerId; // walk up the chain
+  }
+
   localStorage.setItem(REFERRAL_EARNINGS_KEY, JSON.stringify(earnings));
 }

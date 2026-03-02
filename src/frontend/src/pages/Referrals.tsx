@@ -4,10 +4,15 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { useReferralStats } from "@/hooks/useQueries";
 import { useUserId } from "@/hooks/useUserId";
-import { formatINR, getReferralLink } from "@/store/investmentStore";
+import {
+  formatINR,
+  getOrCreateShortCode,
+  getReferralLink,
+} from "@/store/investmentStore";
 import {
   Copy,
   Gift,
+  Hash,
   IndianRupee,
   MessageCircle,
   Share2,
@@ -23,7 +28,9 @@ export function Referrals() {
   const [copied, setCopied] = useState(false);
 
   const referralLink = userId ? getReferralLink(userId) : "";
+  const shortCode = userId ? getOrCreateShortCode(userId) : "";
   const totalEarned = friends.reduce((sum, f) => sum + f.totalProfit, 0);
+  const [codeCopied, setCodeCopied] = useState(false);
 
   function handleCopy() {
     if (!referralLink) return;
@@ -31,6 +38,15 @@ export function Referrals() {
       setCopied(true);
       toast.success("Referral link copied!");
       setTimeout(() => setCopied(false), 2000);
+    });
+  }
+
+  function handleCopyCode() {
+    if (!shortCode) return;
+    navigator.clipboard.writeText(shortCode).then(() => {
+      setCodeCopied(true);
+      toast.success("Referral code copied!");
+      setTimeout(() => setCodeCopied(false), 2000);
     });
   }
 
@@ -76,7 +92,7 @@ export function Referrals() {
               Referral Program
             </h1>
             <p className="text-muted-foreground text-sm">
-              Invite friends and earn 10% of every deposit they make
+              Earn 10% → 7% → 1% across 3 levels of referrals
             </p>
           </div>
         </div>
@@ -100,19 +116,66 @@ export function Referrals() {
           <CardContent className="p-5">
             <div className="flex items-start gap-3">
               <Gift className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-              <div>
-                <p className="text-sm font-semibold text-foreground mb-1">
-                  How Referrals Work
+              <div className="flex-1">
+                <p className="text-sm font-semibold text-foreground mb-3">
+                  3-Level Referral Rewards
                 </p>
-                <p className="text-xs text-muted-foreground leading-relaxed">
-                  Share your unique link. When a friend signs up and deposits,
-                  you automatically earn{" "}
-                  <span className="text-primary font-semibold">
-                    10% of their deposit amount
-                  </span>{" "}
-                  as a bonus credited directly to your wallet. There's no limit
-                  — the more friends you invite, the more you earn!
-                </p>
+                <div className="space-y-2">
+                  <div className="flex items-center gap-3 p-2.5 rounded-lg bg-background/60 border border-primary/15">
+                    <div className="w-7 h-7 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center flex-shrink-0">
+                      <span className="text-[10px] font-bold text-primary">
+                        L1
+                      </span>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-semibold text-foreground">
+                        You invite a friend
+                      </p>
+                      <p className="text-[11px] text-muted-foreground">
+                        They deposit → you earn
+                      </p>
+                    </div>
+                    <span className="text-sm font-bold text-primary flex-shrink-0">
+                      10%
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-3 p-2.5 rounded-lg bg-background/60 border border-chart-3/15">
+                    <div className="w-7 h-7 rounded-full bg-chart-3/20 border border-chart-3/30 flex items-center justify-center flex-shrink-0">
+                      <span className="text-[10px] font-bold text-chart-3">
+                        L2
+                      </span>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-semibold text-foreground">
+                        Your friend invites someone
+                      </p>
+                      <p className="text-[11px] text-muted-foreground">
+                        That person deposits → you earn
+                      </p>
+                    </div>
+                    <span className="text-sm font-bold text-chart-3 flex-shrink-0">
+                      7%
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-3 p-2.5 rounded-lg bg-background/60 border border-chart-5/15">
+                    <div className="w-7 h-7 rounded-full bg-chart-5/20 border border-chart-5/30 flex items-center justify-center flex-shrink-0">
+                      <span className="text-[10px] font-bold text-chart-5">
+                        L3
+                      </span>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-semibold text-foreground">
+                        Their friend invites someone
+                      </p>
+                      <p className="text-[11px] text-muted-foreground">
+                        That person deposits → you earn
+                      </p>
+                    </div>
+                    <span className="text-sm font-bold text-chart-5 flex-shrink-0">
+                      1%
+                    </span>
+                  </div>
+                </div>
               </div>
             </div>
           </CardContent>
@@ -157,13 +220,55 @@ export function Referrals() {
         transition={{ delay: 0.15 }}
         className="mb-6"
       >
-        <Card className="border-border/50">
-          <CardHeader className="pb-3">
-            <CardTitle className="font-display text-base">
+        <Card className="border-primary/25 overflow-hidden relative bg-gradient-to-br from-primary/6 via-card to-chart-3/4">
+          <div
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              background:
+                "radial-gradient(ellipse at 85% 10%, oklch(0.72 0.2 160 / 0.1) 0%, transparent 55%)",
+            }}
+          />
+          <CardHeader className="pb-3 relative z-10">
+            <CardTitle className="font-display text-base flex items-center gap-2">
+              <Hash className="w-4 h-4 text-primary" />
               Your Referral Link
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-3">
+          <CardContent className="space-y-4 relative z-10">
+            {/* Short code display */}
+            <div className="flex items-center gap-3">
+              <div className="flex-1 flex flex-col items-center gap-2 p-4 rounded-xl bg-background/60 border border-primary/20 shadow-inner">
+                <p className="text-[11px] text-muted-foreground font-medium uppercase tracking-widest">
+                  Your Code
+                </p>
+                <p className="text-4xl font-mono font-bold text-primary tracking-[0.3em]">
+                  {shortCode || "------"}
+                </p>
+                <p className="text-[10px] text-muted-foreground">
+                  Friends can enter this on their dashboard
+                </p>
+              </div>
+              <Button
+                size="sm"
+                variant="outline"
+                className="h-12 px-4 border-primary/30 text-primary hover:bg-primary/10 gap-2 flex-col text-xs"
+                onClick={handleCopyCode}
+                disabled={!shortCode}
+              >
+                <Copy className="w-4 h-4" />
+                {codeCopied ? "Copied!" : "Copy Code"}
+              </Button>
+            </div>
+
+            {/* Divider with label */}
+            <div className="flex items-center gap-2">
+              <div className="flex-1 h-px bg-border/40" />
+              <span className="text-[10px] text-muted-foreground/60 uppercase tracking-wider font-medium">
+                or share link
+              </span>
+              <div className="flex-1 h-px bg-border/40" />
+            </div>
+
             {/* Link display */}
             <div className="flex items-center gap-2 p-3 rounded-lg bg-secondary/50 border border-border/60">
               <p className="flex-1 text-xs font-mono text-muted-foreground truncate min-w-0">
@@ -297,10 +402,13 @@ export function Referrals() {
         className="p-5 rounded-xl bg-card border border-border/50"
       >
         <p className="text-xs text-muted-foreground leading-relaxed text-center">
-          <span className="text-foreground font-medium">Earn 10%</span> of every
-          deposit your invited friend makes. Bonuses are credited instantly to
-          your wallet. Your friends must sign up using your referral link for
-          the bonus to apply.
+          Earn <span className="text-primary font-semibold">10%</span> when your
+          direct friend deposits,{" "}
+          <span className="text-chart-3 font-semibold">7%</span> when their
+          friend deposits, and{" "}
+          <span className="text-chart-5 font-semibold">1%</span> from the 3rd
+          level. Bonuses are credited instantly to your wallet across all 3
+          levels.
         </p>
       </motion.div>
     </div>

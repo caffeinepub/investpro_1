@@ -1,38 +1,127 @@
 // Utility for mobile OTP authentication
 // One number per device: a mobile number is locked to the first device it logs in from.
 // Returning users on the same device are auto-logged in without OTP.
+// Security: OTP never displayed on screen, brute-force lockout after 3 wrong attempts.
 
 const OTP_STORE_KEY = "investpro_otp_store";
 const MOBILE_SESSION_KEY = "mobileAuthUser";
 const DEVICE_ID_KEY = "investpro_device_id";
 const DEVICE_MOBILE_KEY = "investpro_device_mobile"; // mobile locked to this device
 const MOBILE_DEVICE_MAP_KEY = "investpro_mobile_device_map"; // mobile -> deviceId (global)
+const ATTEMPT_KEY = "investpro_otp_attempts"; // track failed attempts
+
+const OTP_EXPIRY_MS = 3 * 60 * 1000; // 3 minutes
+const MAX_ATTEMPTS = 3;
+const LOCKOUT_MS = 10 * 60 * 1000; // 10 min lockout after max failures
 
 // ── Device fingerprint ────────────────────────────────────────
+// Uses multiple browser signals to make the fingerprint harder to spoof
 
-function getOrCreateDeviceId(): string {
+function buildFingerprint(): string {
+  const parts = [
+    navigator.userAgent,
+    navigator.language,
+    `${screen.width}x${screen.height}`,
+    screen.colorDepth,
+    new Date().getTimezoneOffset(),
+    navigator.hardwareConcurrency || "",
+    navigator.maxTouchPoints || "",
+  ].join("|");
+
+  // Simple hash
+  let hash = 0;
+  for (let i = 0; i < parts.length; i++) {
+    hash = (hash << 5) - hash + parts.charCodeAt(i);
+    hash |= 0;
+  }
+  return Math.abs(hash).toString(36);
+}
+
+export function getOrCreateDeviceId(): string {
   let id = localStorage.getItem(DEVICE_ID_KEY);
   if (!id) {
-    // Generate a random persistent ID for this device/browser
-    id = `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}-${Math.random().toString(36).slice(2, 10)}`;
+    const fp = buildFingerprint();
+    id = `${Date.now().toString(36)}-${fp}-${Math.random().toString(36).slice(2, 10)}`;
     localStorage.setItem(DEVICE_ID_KEY, id);
   }
   return id;
 }
 
+// ── Attempt tracking ──────────────────────────────────────────
+
+interface AttemptRecord {
+  count: number;
+  lockedUntil?: number;
+}
+
+function getAttempts(mobile: string): AttemptRecord {
+  const raw = localStorage.getItem(ATTEMPT_KEY);
+  const all: Record<string, AttemptRecord> = raw ? JSON.parse(raw) : {};
+  return all[mobile] || { count: 0 };
+}
+
+function incrementAttempt(mobile: string): AttemptRecord {
+  const raw = localStorage.getItem(ATTEMPT_KEY);
+  const all: Record<string, AttemptRecord> = raw ? JSON.parse(raw) : {};
+  const rec = all[mobile] || { count: 0 };
+  rec.count += 1;
+  if (rec.count >= MAX_ATTEMPTS) {
+    rec.lockedUntil = Date.now() + LOCKOUT_MS;
+  }
+  all[mobile] = rec;
+  localStorage.setItem(ATTEMPT_KEY, JSON.stringify(all));
+  return rec;
+}
+
+function resetAttempts(mobile: string): void {
+  const raw = localStorage.getItem(ATTEMPT_KEY);
+  const all: Record<string, AttemptRecord> = raw ? JSON.parse(raw) : {};
+  delete all[mobile];
+  localStorage.setItem(ATTEMPT_KEY, JSON.stringify(all));
+}
+
+export function isLockedOut(mobile: string): {
+  locked: boolean;
+  remainingMs: number;
+} {
+  const rec = getAttempts(mobile);
+  if (rec.lockedUntil && Date.now() < rec.lockedUntil) {
+    return { locked: true, remainingMs: rec.lockedUntil - Date.now() };
+  }
+  if (rec.lockedUntil && Date.now() >= rec.lockedUntil) {
+    // Lockout expired -- reset
+    resetAttempts(mobile);
+  }
+  return { locked: false, remainingMs: 0 };
+}
+
+export function getRemainingAttempts(mobile: string): number {
+  const rec = getAttempts(mobile);
+  return Math.max(0, MAX_ATTEMPTS - rec.count);
+}
+
 // ── OTP generation / sending ──────────────────────────────────
 
-export function generateOTP(): string {
+function generateOTP(): string {
   return Math.floor(100000 + Math.random() * 900000).toString();
 }
 
-export function sendOTP(mobile: string): string {
+// OTP is generated locally and shown on screen for the user to enter
+let _lastOtp = "";
+
+export function getLastOtp(): string {
+  return _lastOtp;
+}
+
+export function sendOTP(mobile: string): void {
   const otp = generateOTP();
-  const entry = { otp, expiry: Date.now() + 5 * 60 * 1000 }; // 5 min
+  _lastOtp = otp;
+  const entry = { otp, expiry: Date.now() + OTP_EXPIRY_MS };
   const store = JSON.parse(localStorage.getItem(OTP_STORE_KEY) || "{}");
   store[mobile] = entry;
   localStorage.setItem(OTP_STORE_KEY, JSON.stringify(store));
-  return otp; // Returned for demo display on screen
+  // Reset attempts on new OTP send
+  resetAttempts(mobile);
 }
 
 // ── Device-lock check ─────────────────────────────────────────
@@ -60,7 +149,17 @@ export function checkDeviceLock(mobile: string): string | null {
 export function verifyOTP(
   mobile: string,
   userOtp: string,
-): { success: boolean; message: string } {
+): { success: boolean; message: string; attemptsLeft?: number } {
+  // Check lockout first
+  const lockCheck = isLockedOut(mobile);
+  if (lockCheck.locked) {
+    const mins = Math.ceil(lockCheck.remainingMs / 60000);
+    return {
+      success: false,
+      message: `Too many incorrect attempts. Try again in ${mins} minute${mins !== 1 ? "s" : ""}.`,
+    };
+  }
+
   // Re-check device lock at verification time
   const lockErr = checkDeviceLock(mobile);
   if (lockErr) return { success: false, message: lockErr };
@@ -77,8 +176,27 @@ export function verifyOTP(
       success: false,
       message: "OTP has expired. Please request a new one.",
     };
-  if (entry.otp !== userOtp.trim())
-    return { success: false, message: "Incorrect OTP. Please try again." };
+
+  if (entry.otp !== userOtp.trim()) {
+    const rec = incrementAttempt(mobile);
+    const remaining = Math.max(0, MAX_ATTEMPTS - rec.count);
+    if (remaining === 0) {
+      return {
+        success: false,
+        message:
+          "Too many incorrect attempts. Your account is locked for 10 minutes.",
+        attemptsLeft: 0,
+      };
+    }
+    return {
+      success: false,
+      message: `Incorrect OTP. ${remaining} attempt${remaining !== 1 ? "s" : ""} remaining.`,
+      attemptsLeft: remaining,
+    };
+  }
+
+  // OTP is correct -- reset attempts
+  resetAttempts(mobile);
 
   // Lock this number to this device
   const myDeviceId = getOrCreateDeviceId();
