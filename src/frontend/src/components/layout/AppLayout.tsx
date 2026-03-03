@@ -1,20 +1,18 @@
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { useInternetIdentity } from "@/hooks/useInternetIdentity";
 import { useIsAdmin, useUserProfile } from "@/hooks/useQueries";
-import { clearMobileSession } from "@/utils/mobileAuth";
+import { getUserProfile, saveUserProfile } from "@/store/investmentStore";
+import { getMobileSession } from "@/utils/mobileAuth";
 import { Link, useRouterState } from "@tanstack/react-router";
 import {
   ArrowDownCircle,
   ArrowUpCircle,
   Building2,
   ChevronRight,
+  Crown,
   History,
   LayoutDashboard,
-  LogOut,
-  Menu,
   MoreHorizontal,
   Settings,
   Share2,
@@ -35,6 +33,7 @@ interface NavItem {
 const NAV_ITEMS: NavItem[] = [
   { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { label: "Plans", href: "/plans", icon: TrendingUp },
+  { label: "Royal Pass", href: "/royal-pass", icon: Crown },
   { label: "Deposit", href: "/deposit", icon: ArrowDownCircle },
   { label: "Withdraw", href: "/withdraw", icon: ArrowUpCircle },
   { label: "Referrals", href: "/referrals", icon: Share2 },
@@ -55,7 +54,6 @@ const BOTTOM_NAV: NavItem[] = [
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const { clear } = useInternetIdentity();
   const { data: profile } = useUserProfile();
   const { data: isAdmin } = useIsAdmin();
   const routerState = useRouterState();
@@ -71,6 +69,14 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
         .toUpperCase()
         .slice(0, 2)
     : "IP";
+
+  // Retrieve the user's unique IP-XXXXX id for display
+  const mobileUser = getMobileSession();
+  const userProfile = mobileUser ? getUserProfile(mobileUser) : null;
+  // If no profile yet, create one on the fly for display
+  const displayUserId =
+    userProfile?.userId ??
+    (mobileUser ? saveUserProfile(mobileUser, {}).userId : null);
 
   const SidebarContent = () => (
     <div className="flex flex-col h-full">
@@ -122,19 +128,51 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
             >
               <Icon
                 className={`w-4 h-4 flex-shrink-0 transition-colors ${
-                  isActive
-                    ? "text-primary"
-                    : "text-muted-foreground group-hover:text-sidebar-accent-foreground"
+                  item.href === "/royal-pass"
+                    ? isActive
+                      ? "text-amber-400"
+                      : "text-amber-500/70 group-hover:text-amber-400"
+                    : isActive
+                      ? "text-primary"
+                      : "text-muted-foreground group-hover:text-sidebar-accent-foreground"
                 }`}
               />
-              <span className="flex-1">{item.label}</span>
-              {isActive && (
+              <span
+                className="flex-1"
+                style={
+                  item.href === "/royal-pass"
+                    ? {
+                        background:
+                          "linear-gradient(90deg, oklch(0.78 0.16 75), oklch(0.9 0.22 82))",
+                        WebkitBackgroundClip: "text",
+                        WebkitTextFillColor: "transparent",
+                        backgroundClip: "text",
+                        fontWeight: 700,
+                      }
+                    : undefined
+                }
+              >
+                {item.label}
+              </span>
+              {isActive && item.href !== "/royal-pass" && (
                 <ChevronRight className="w-3 h-3 text-primary opacity-60" />
               )}
               {item.adminOnly && (
                 <Badge className="text-[9px] h-4 px-1 gold-gradient text-primary-foreground border-0 font-bold">
                   ADMIN
                 </Badge>
+              )}
+              {item.href === "/royal-pass" && (
+                <span
+                  className="ml-auto text-[9px] font-bold border-0 px-1.5 py-0.5 rounded-sm"
+                  style={{
+                    background:
+                      "linear-gradient(90deg, oklch(0.78 0.16 75), oklch(0.85 0.2 78))",
+                    color: "oklch(0.08 0.03 75)",
+                  }}
+                >
+                  PRO
+                </span>
               )}
             </Link>
           );
@@ -145,7 +183,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
 
       {/* User info + logout */}
       <div className="px-4 py-4">
-        <div className="flex items-center gap-3 mb-3">
+        <div className="flex items-center gap-3">
           <Avatar className="h-8 w-8 border border-primary/30">
             <AvatarFallback className="bg-primary/10 text-primary text-xs font-bold">
               {initials}
@@ -155,6 +193,11 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
             <p className="text-sm font-medium text-sidebar-foreground truncate">
               {profile?.name || "Investor"}
             </p>
+            {displayUserId && (
+              <p className="text-[10px] text-muted-foreground/70 font-mono tracking-wider mt-0.5">
+                {displayUserId}
+              </p>
+            )}
             {isAdmin && (
               <Badge className="text-[9px] h-4 px-1.5 gold-gradient text-primary-foreground border-0 font-bold mt-0.5">
                 ADMIN
@@ -162,19 +205,6 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
             )}
           </div>
         </div>
-        <Button
-          variant="ghost"
-          size="sm"
-          className="w-full justify-start gap-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10 h-8"
-          onClick={() => {
-            clearMobileSession();
-            clear();
-            window.location.reload();
-          }}
-        >
-          <LogOut className="w-3.5 h-3.5" />
-          Sign Out
-        </Button>
       </div>
     </div>
   );

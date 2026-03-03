@@ -67,15 +67,15 @@ export function Login() {
   const [autoLoggingIn, setAutoLoggingIn] = useState(false);
   const [shownOtp, setShownOtp] = useState("");
 
-  // Auto-login: if this device already verified, restore session and redirect
+  // Auto-login: if this device already verified, redirect straight to dashboard
   useEffect(() => {
     const autoMobile = getAutoLoginMobile();
     if (autoMobile) {
       setAutoLoggingIn(true);
-      // Give a brief moment to show the animation, then reload into app
+      // Brief animation, then redirect — session is already in localStorage
       setTimeout(() => {
-        window.location.reload();
-      }, 1200);
+        window.location.replace("/dashboard");
+      }, 900);
     }
   }, []);
 
@@ -213,7 +213,7 @@ export function Login() {
     setTimeout(() => {
       const result = verifyOTP(cleaned, otp);
       if (result.success) {
-        window.location.reload();
+        window.location.replace("/dashboard");
       } else {
         setError(result.message);
         setIsVerifying(false);

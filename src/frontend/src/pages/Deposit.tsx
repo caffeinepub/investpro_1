@@ -17,7 +17,7 @@ import {
 } from "@/hooks/useQueries";
 import { useUserId } from "@/hooks/useUserId";
 import { notifyWhatsApp } from "@/lib/whatsappNotify";
-import { formatINR } from "@/store/investmentStore";
+import { formatINR, setRoyalPassActive } from "@/store/investmentStore";
 import {
   AlertCircle,
   ArrowDownCircle,
@@ -26,6 +26,7 @@ import {
   Clock,
   Copy,
   CreditCard,
+  Crown,
   ImagePlus,
   Loader2,
   Mail,
@@ -34,7 +35,7 @@ import {
   Zap,
 } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
 const RAZORPAY_KEY = "rzp_test_SMErEZi6HYvAmP";
@@ -46,7 +47,7 @@ declare global {
   }
 }
 
-const QUICK_AMOUNTS = [1000, 5000, 10000, 25000];
+const QUICK_AMOUNTS = [1000, 1999, 5000, 10000, 25000];
 
 function CopyField({
   label,
@@ -95,6 +96,10 @@ export function Deposit() {
 
   const depositMutation = useDeposit(userId);
 
+  // Detect royal pass purchase mode from URL
+  const urlParams = new URLSearchParams(window.location.search);
+  const isRoyalPass = urlParams.get("royal") === "true";
+
   const [amount, setAmount] = useState("");
   const [utr, setUtr] = useState("");
   const [screenshot, setScreenshot] = useState<File | null>(null);
@@ -104,6 +109,13 @@ export function Deposit() {
   const [depositedAmount, setDepositedAmount] = useState(0);
   const [razorpayLoading, setRazorpayLoading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Auto-set amount to 1999 when purchasing royal pass
+  useEffect(() => {
+    if (isRoyalPass) {
+      setAmount("1999");
+    }
+  }, [isRoyalPass]);
 
   const parsedAmount = Number(amount);
   const isValidAmount = parsedAmount >= 100 && !Number.isNaN(parsedAmount);
@@ -152,6 +164,11 @@ export function Deposit() {
       const wasAutoApproved = result?.autoApproved ?? false;
       setAutoApproved(wasAutoApproved);
       setDepositedAmount(parsedAmount);
+
+      // Activate Royal Pass if this was a royal pass purchase
+      if (isRoyalPass && wasAutoApproved && userId) {
+        setRoyalPassActive(userId);
+      }
 
       // Silent background notification to admin — no WhatsApp window opened
       notifyWhatsApp(
@@ -206,6 +223,9 @@ export function Deposit() {
           setDepositedAmount(parsedAmount);
           setAutoApproved(true);
           setSubmitted(true);
+          if (isRoyalPass && userId) {
+            setRoyalPassActive(userId);
+          }
           notifyWhatsApp(
             `RAZORPAY DEPOSIT\nUser: ${userName}\nAmount: ₹${parsedAmount}\nPayment ID: ${response.razorpay_payment_id}\nWallet credited automatically.`,
           );
@@ -378,6 +398,43 @@ export function Deposit() {
 
       {!submitted && (
         <>
+          {/* Royal Pass Notice Banner */}
+          {isRoyalPass && (
+            <motion.div
+              className="mb-6"
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.05 }}
+            >
+              <div
+                className="rounded-xl p-4 flex items-start gap-3"
+                style={{
+                  background:
+                    "linear-gradient(135deg, oklch(0.1 0.04 75 / 0.7), oklch(0.08 0.02 285 / 0.9))",
+                  border: "1px solid oklch(0.78 0.16 75 / 0.4)",
+                  boxShadow: "0 0 20px oklch(0.78 0.16 75 / 0.1)",
+                }}
+              >
+                <Crown
+                  className="w-5 h-5 flex-shrink-0 mt-0.5"
+                  style={{ color: "oklch(0.85 0.2 78)" }}
+                />
+                <div>
+                  <p
+                    className="font-bold text-sm"
+                    style={{ color: "oklch(0.85 0.2 78)" }}
+                  >
+                    Purchasing Royal Pass – ₹1,999/month
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    Complete the payment below to activate your Royal Pass and
+                    unlock all premium features instantly.
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+          )}
+
           {/* Amount selection */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}

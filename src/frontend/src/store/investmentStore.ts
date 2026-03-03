@@ -91,13 +91,14 @@ export interface UserData {
 }
 
 export const INVESTMENT_PLANS = {
+  // ── Classic Plans (2.9x return, 21 days) ─────────────────
   mini: {
     id: "mini" as const,
     name: "Mini",
     amountInvested: 500,
-    dailyReturn: 83,
-    termDays: 15,
-    totalReturn: 1250,
+    dailyReturn: 45,
+    termDays: 21,
+    totalReturn: 1450,
     color: "chart-2",
     description: "Start small, grow big",
   },
@@ -105,9 +106,9 @@ export const INVESTMENT_PLANS = {
     id: "starter" as const,
     name: "Starter",
     amountInvested: 1000,
-    dailyReturn: 167,
-    termDays: 15,
-    totalReturn: 2500,
+    dailyReturn: 90,
+    termDays: 21,
+    totalReturn: 2900,
     color: "chart-3",
     description: "Perfect for beginners",
   },
@@ -115,9 +116,9 @@ export const INVESTMENT_PLANS = {
     id: "silver" as const,
     name: "Silver",
     amountInvested: 5000,
-    dailyReturn: 833,
-    termDays: 15,
-    totalReturn: 12500,
+    dailyReturn: 452,
+    termDays: 21,
+    totalReturn: 14500,
     color: "chart-2",
     description: "For serious investors",
   },
@@ -125,9 +126,9 @@ export const INVESTMENT_PLANS = {
     id: "gold" as const,
     name: "Gold",
     amountInvested: 10000,
-    dailyReturn: 1667,
-    termDays: 15,
-    totalReturn: 25000,
+    dailyReturn: 905,
+    termDays: 21,
+    totalReturn: 29000,
     color: "gold",
     description: "Maximum returns",
   },
@@ -135,9 +136,9 @@ export const INVESTMENT_PLANS = {
     id: "diamond" as const,
     name: "Diamond",
     amountInvested: 25000,
-    dailyReturn: 4167,
-    termDays: 15,
-    totalReturn: 62500,
+    dailyReturn: 2262,
+    termDays: 21,
+    totalReturn: 72500,
     color: "cyan",
     description: "Elite growth tier",
   },
@@ -145,9 +146,9 @@ export const INVESTMENT_PLANS = {
     id: "platinum" as const,
     name: "Platinum",
     amountInvested: 50000,
-    dailyReturn: 8333,
-    termDays: 15,
-    totalReturn: 125000,
+    dailyReturn: 4524,
+    termDays: 21,
+    totalReturn: 145000,
     color: "violet",
     description: "Accelerated wealth",
   },
@@ -155,9 +156,9 @@ export const INVESTMENT_PLANS = {
     id: "basic" as const,
     name: "Basic",
     amountInvested: 2000,
-    dailyReturn: 333,
-    termDays: 15,
-    totalReturn: 5000,
+    dailyReturn: 181,
+    termDays: 21,
+    totalReturn: 5800,
     color: "blue",
     description: "Simple and steady growth",
   },
@@ -165,9 +166,9 @@ export const INVESTMENT_PLANS = {
     id: "pro" as const,
     name: "Pro",
     amountInvested: 3000,
-    dailyReturn: 500,
-    termDays: 15,
-    totalReturn: 7500,
+    dailyReturn: 271,
+    termDays: 21,
+    totalReturn: 8700,
     color: "purple",
     description: "Professional-grade returns",
   },
@@ -175,20 +176,20 @@ export const INVESTMENT_PLANS = {
     id: "supreme" as const,
     name: "Supreme",
     amountInvested: 7500,
-    dailyReturn: 1250,
-    termDays: 15,
-    totalReturn: 18750,
+    dailyReturn: 679,
+    termDays: 21,
+    totalReturn: 21750,
     color: "indigo",
     description: "Supreme value for smart investors",
   },
-  // ── Normal Business Plans ────────────────────────────────
+  // ── Normal Business Plans (3x return, 18 days) ──────────
   nb_bronze: {
     id: "nb_bronze" as const,
     name: "NB Bronze",
     amountInvested: 1500,
-    dailyReturn: 250,
-    termDays: 15,
-    totalReturn: 3750,
+    dailyReturn: 167,
+    termDays: 18,
+    totalReturn: 4500,
     color: "orange",
     description: "Normal Business entry plan",
   },
@@ -196,9 +197,9 @@ export const INVESTMENT_PLANS = {
     id: "nb_silver" as const,
     name: "NB Silver",
     amountInvested: 4000,
-    dailyReturn: 667,
-    termDays: 15,
-    totalReturn: 10000,
+    dailyReturn: 444,
+    termDays: 18,
+    totalReturn: 12000,
     color: "slate",
     description: "Steady business growth",
   },
@@ -206,9 +207,9 @@ export const INVESTMENT_PLANS = {
     id: "nb_gold" as const,
     name: "NB Gold",
     amountInvested: 8000,
-    dailyReturn: 1333,
-    termDays: 15,
-    totalReturn: 20000,
+    dailyReturn: 889,
+    termDays: 18,
+    totalReturn: 24000,
     color: "yellow",
     description: "Business gold tier returns",
   },
@@ -216,9 +217,9 @@ export const INVESTMENT_PLANS = {
     id: "nb_premium" as const,
     name: "NB Premium",
     amountInvested: 15000,
-    dailyReturn: 2500,
-    termDays: 15,
-    totalReturn: 37500,
+    dailyReturn: 1667,
+    termDays: 18,
+    totalReturn: 45000,
     color: "emerald",
     description: "Premium business accelerator",
   },
@@ -226,20 +227,20 @@ export const INVESTMENT_PLANS = {
     id: "nb_elite" as const,
     name: "NB Elite",
     amountInvested: 30000,
-    dailyReturn: 5000,
-    termDays: 15,
-    totalReturn: 75000,
+    dailyReturn: 3333,
+    termDays: 18,
+    totalReturn: 90000,
     color: "teal",
     description: "Elite business wealth builder",
   },
-  // ── VIP Plans ────────────────────────────────────────────
+  // ── VIP Plans (5x return, 15 days) ──────────────────────
   vip_silver: {
     id: "vip_silver" as const,
     name: "VIP Silver",
     amountInvested: 20000,
-    dailyReturn: 3333,
+    dailyReturn: 5333,
     termDays: 15,
-    totalReturn: 50000,
+    totalReturn: 100000,
     color: "gray",
     description: "VIP entry — exclusive returns",
   },
@@ -247,9 +248,9 @@ export const INVESTMENT_PLANS = {
     id: "vip_gold" as const,
     name: "VIP Gold",
     amountInvested: 40000,
-    dailyReturn: 6667,
+    dailyReturn: 10667,
     termDays: 15,
-    totalReturn: 100000,
+    totalReturn: 200000,
     color: "amber",
     description: "VIP gold — premium wealth",
   },
@@ -257,9 +258,9 @@ export const INVESTMENT_PLANS = {
     id: "vip_platinum" as const,
     name: "VIP Platinum",
     amountInvested: 75000,
-    dailyReturn: 12500,
+    dailyReturn: 20000,
     termDays: 15,
-    totalReturn: 187500,
+    totalReturn: 375000,
     color: "cyan",
     description: "VIP platinum — elite wealth",
   },
@@ -267,9 +268,9 @@ export const INVESTMENT_PLANS = {
     id: "vip_diamond" as const,
     name: "VIP Diamond",
     amountInvested: 150000,
-    dailyReturn: 25000,
+    dailyReturn: 40000,
     termDays: 15,
-    totalReturn: 375000,
+    totalReturn: 750000,
     color: "sky",
     description: "VIP diamond — ultra wealth",
   },
@@ -277,9 +278,9 @@ export const INVESTMENT_PLANS = {
     id: "vip_black" as const,
     name: "VIP Black",
     amountInvested: 300000,
-    dailyReturn: 50000,
+    dailyReturn: 80000,
     termDays: 15,
-    totalReturn: 750000,
+    totalReturn: 1500000,
     color: "zinc",
     description: "VIP black card — prestige tier",
   },
@@ -287,9 +288,9 @@ export const INVESTMENT_PLANS = {
     id: "vip_royal" as const,
     name: "VIP Royal",
     amountInvested: 500000,
-    dailyReturn: 83333,
+    dailyReturn: 133333,
     termDays: 15,
-    totalReturn: 1250000,
+    totalReturn: 2500000,
     color: "rose",
     description: "VIP royal — supreme wealth",
   },
@@ -1004,6 +1005,96 @@ export function hasReferrer(userId: string): boolean {
 // Level 1 (direct inviter)        → 10%
 // Level 2 (inviter of inviter)    →  7%
 // Level 3 (inviter of level-2)    →  1%
+
+// ── User Profile ─────────────────────────────────────────────
+
+const USER_PROFILE_KEY = "__investpro_user_profiles__";
+
+export interface UserProfile {
+  userId: string; // unique short ID like "IP-83726"
+  phone: string;
+  displayName: string;
+  joinedAt: number;
+  tier: "Classic" | "NormalBusiness" | "VIP" | null;
+}
+
+function generateUserId(): string {
+  return `IP-${Math.floor(10000 + Math.random() * 90000)}`;
+}
+
+export function getUserProfile(phone: string): UserProfile | null {
+  const all = JSON.parse(
+    localStorage.getItem(USER_PROFILE_KEY) || "{}",
+  ) as Record<string, UserProfile>;
+  return all[phone] || null;
+}
+
+export function saveUserProfile(
+  phone: string,
+  updates: Partial<Omit<UserProfile, "userId" | "phone" | "joinedAt">>,
+): UserProfile {
+  const all = JSON.parse(
+    localStorage.getItem(USER_PROFILE_KEY) || "{}",
+  ) as Record<string, UserProfile>;
+  const existing = all[phone];
+  const profile: UserProfile = existing || {
+    userId: generateUserId(),
+    phone,
+    displayName: `User ${phone.slice(-4)}`,
+    joinedAt: Date.now(),
+    tier: null,
+  };
+  Object.assign(profile, updates);
+  all[phone] = profile;
+  localStorage.setItem(USER_PROFILE_KEY, JSON.stringify(all));
+  return profile;
+}
+
+export function getUserTier(
+  investments: Investment[],
+): "Classic" | "NormalBusiness" | "VIP" | null {
+  const active = investments.filter((i) => i.status === "Active");
+  if (active.length === 0) return null;
+  const vipIds: PlanId[] = [
+    "vip_silver",
+    "vip_gold",
+    "vip_platinum",
+    "vip_diamond",
+    "vip_black",
+    "vip_royal",
+  ];
+  const nbIds: PlanId[] = [
+    "nb_bronze",
+    "nb_silver",
+    "nb_gold",
+    "nb_premium",
+    "nb_elite",
+  ];
+  if (active.some((i) => vipIds.includes(i.planId))) return "VIP";
+  if (active.some((i) => nbIds.includes(i.planId))) return "NormalBusiness";
+  return "Classic";
+}
+
+// ── Royal Pass ───────────────────────────────────────────────
+
+const ROYAL_PASS_KEY = "investpro_royal_pass";
+
+export function getRoyalPassStatus(userId: string): boolean {
+  try {
+    const data = JSON.parse(localStorage.getItem(ROYAL_PASS_KEY) || "{}");
+    return data[userId] === true;
+  } catch {
+    return false;
+  }
+}
+
+export function setRoyalPassActive(userId: string): void {
+  try {
+    const data = JSON.parse(localStorage.getItem(ROYAL_PASS_KEY) || "{}");
+    data[userId] = true;
+    localStorage.setItem(ROYAL_PASS_KEY, JSON.stringify(data));
+  } catch {}
+}
 
 export function creditReferralBonus(
   depositUserId: string,

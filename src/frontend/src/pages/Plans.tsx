@@ -22,7 +22,7 @@ import {
   Zap,
 } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 interface PlanMeta {
@@ -47,8 +47,8 @@ const PLAN_META: Record<PlanId, PlanMeta> = {
   mini: {
     luxuryTag: "ADIDAS ORIGINALS",
     luxuryHouse: "Streetwear Tier",
-    roiPercent: Math.round((83 / 500) * 100 * 10) / 10,
-    multiplier: 2.5,
+    roiPercent: 9.0,
+    multiplier: 2.9,
     tierFill: 15,
     gradient: "linear-gradient(145deg, #080808 0%, #111111 45%, #0a0a0a 100%)",
     overlayGradient:
@@ -61,9 +61,9 @@ const PLAN_META: Record<PlanId, PlanMeta> = {
     liveDotColor: "#ffffff",
     labelColor: "rgba(255,255,255,0.55)",
     features: [
-      `${formatINR(83)} daily return`,
-      "15-day active term",
-      `${formatINR(1250)} total profit`,
+      `${formatINR(45)} daily return (9.0%)`,
+      "21-day active term",
+      `${formatINR(1450)} total profit (2.9x)`,
       "Claim every 24 hours",
       "Bank withdrawal support",
     ],
@@ -71,8 +71,8 @@ const PLAN_META: Record<PlanId, PlanMeta> = {
   starter: {
     luxuryTag: "BALENCIAGA",
     luxuryHouse: "Avant-Garde Tier",
-    roiPercent: Math.round((167 / 1000) * 100 * 10) / 10,
-    multiplier: 2.5,
+    roiPercent: 9.0,
+    multiplier: 2.9,
     tierFill: 26,
     gradient: "linear-gradient(145deg, #141418 0%, #1c1c24 50%, #101014 100%)",
     overlayGradient:
@@ -85,9 +85,9 @@ const PLAN_META: Record<PlanId, PlanMeta> = {
     liveDotColor: "#c8c8d8",
     labelColor: "rgba(200,200,216,0.5)",
     features: [
-      `${formatINR(167)} daily return`,
-      "15-day active term",
-      `${formatINR(2500)} total profit`,
+      `${formatINR(90)} daily return (9.0%)`,
+      "21-day active term",
+      `${formatINR(2900)} total profit (2.9x)`,
       "Claim every 24 hours",
       "Bank withdrawal support",
     ],
@@ -95,8 +95,8 @@ const PLAN_META: Record<PlanId, PlanMeta> = {
   silver: {
     luxuryTag: "HUGO BOSS",
     luxuryHouse: "Corporate Luxury Tier",
-    roiPercent: Math.round((833 / 5000) * 100 * 10) / 10,
-    multiplier: 2.5,
+    roiPercent: 9.0,
+    multiplier: 2.9,
     tierFill: 40,
     gradient: "linear-gradient(145deg, #0e1218 0%, #161e28 50%, #0c1016 100%)",
     overlayGradient:
@@ -109,9 +109,9 @@ const PLAN_META: Record<PlanId, PlanMeta> = {
     liveDotColor: "#a0c4d8",
     labelColor: "rgba(160,196,216,0.5)",
     features: [
-      `${formatINR(833)} daily return`,
-      "15-day active term",
-      `${formatINR(12500)} total profit`,
+      `${formatINR(452)} daily return (9.0%)`,
+      "21-day active term",
+      `${formatINR(14500)} total profit (2.9x)`,
       "Claim every 24 hours",
       "Bank withdrawal support",
       "Priority support",
@@ -120,8 +120,8 @@ const PLAN_META: Record<PlanId, PlanMeta> = {
   gold: {
     luxuryTag: "VERSACE",
     luxuryHouse: "Byzantine Gold Tier",
-    roiPercent: Math.round((1667 / 10000) * 100 * 10) / 10,
-    multiplier: 2.5,
+    roiPercent: 9.0,
+    multiplier: 2.9,
     tierFill: 54,
     gradient: "linear-gradient(145deg, #100c00 0%, #1e1600 50%, #0e0a00 100%)",
     overlayGradient:
@@ -135,9 +135,9 @@ const PLAN_META: Record<PlanId, PlanMeta> = {
     liveDotColor: "#daa520",
     labelColor: "rgba(218,165,32,0.55)",
     features: [
-      `${formatINR(1667)} daily return`,
-      "15-day active term",
-      `${formatINR(25000)} total profit`,
+      `${formatINR(905)} daily return (9.0%)`,
+      "21-day active term",
+      `${formatINR(29000)} total profit (2.9x)`,
       "Claim every 24 hours",
       "Bank withdrawal support",
       "Priority support",
@@ -147,8 +147,8 @@ const PLAN_META: Record<PlanId, PlanMeta> = {
   diamond: {
     luxuryTag: "TIFFANY & CO.",
     luxuryHouse: "Robin Egg Blue Tier",
-    roiPercent: Math.round((4167 / 25000) * 100 * 10) / 10,
-    multiplier: 2.5,
+    roiPercent: 9.0,
+    multiplier: 2.9,
     tierFill: 63,
     gradient: "linear-gradient(145deg, #00100e 0%, #001a18 50%, #000e0c 100%)",
     overlayGradient:
@@ -162,9 +162,9 @@ const PLAN_META: Record<PlanId, PlanMeta> = {
     liveDotColor: "#00c3b4",
     labelColor: "rgba(0,195,180,0.52)",
     features: [
-      `${formatINR(4167)} daily return`,
-      "15-day active term",
-      `${formatINR(62500)} total profit`,
+      `${formatINR(2262)} daily return (9.0%)`,
+      "21-day active term",
+      `${formatINR(72500)} total profit (2.9x)`,
       "Claim every 24 hours",
       "Bank withdrawal support",
       "Priority support",
@@ -174,8 +174,8 @@ const PLAN_META: Record<PlanId, PlanMeta> = {
   platinum: {
     luxuryTag: "LOUIS VUITTON",
     luxuryHouse: "Maison Monogram Tier",
-    roiPercent: Math.round((8333 / 50000) * 100 * 10) / 10,
-    multiplier: 2.5,
+    roiPercent: 9.0,
+    multiplier: 2.9,
     tierFill: 73,
     gradient: "linear-gradient(145deg, #120900 0%, #1e1000 50%, #100800 100%)",
     overlayGradient:
@@ -189,9 +189,9 @@ const PLAN_META: Record<PlanId, PlanMeta> = {
     liveDotColor: "#c89632",
     labelColor: "rgba(200,150,50,0.52)",
     features: [
-      `${formatINR(8333)} daily return`,
-      "15-day active term",
-      `${formatINR(125000)} total profit`,
+      `${formatINR(4524)} daily return (9.0%)`,
+      "21-day active term",
+      `${formatINR(145000)} total profit (2.9x)`,
       "Claim every 24 hours",
       "Instant withdrawals",
       "Dedicated wealth advisor",
@@ -201,8 +201,8 @@ const PLAN_META: Record<PlanId, PlanMeta> = {
   basic: {
     luxuryTag: "BASIC PLAN",
     luxuryHouse: "Foundation Tier",
-    roiPercent: Math.round((333 / 2000) * 100 * 10) / 10,
-    multiplier: 2.5,
+    roiPercent: 9.0,
+    multiplier: 2.9,
     tierFill: 45,
     gradient: "linear-gradient(145deg, #060a14 0%, #0c1424 50%, #060a14 100%)",
     overlayGradient:
@@ -216,9 +216,9 @@ const PLAN_META: Record<PlanId, PlanMeta> = {
     liveDotColor: "#3b82f6",
     labelColor: "rgba(59,130,246,0.55)",
     features: [
-      `${formatINR(333)} daily return`,
-      "15-day active term",
-      `${formatINR(5000)} total profit`,
+      `${formatINR(181)} daily return (9.0%)`,
+      "21-day active term",
+      `${formatINR(5800)} total profit (2.9x)`,
       "Claim every 24 hours",
       "Bank withdrawal support",
       "Easy to start",
@@ -227,8 +227,8 @@ const PLAN_META: Record<PlanId, PlanMeta> = {
   pro: {
     luxuryTag: "PRO PLAN",
     luxuryHouse: "Growth Tier",
-    roiPercent: Math.round((500 / 3000) * 100 * 10) / 10,
-    multiplier: 2.5,
+    roiPercent: 9.0,
+    multiplier: 2.9,
     tierFill: 58,
     gradient: "linear-gradient(145deg, #0a0614 0%, #130a24 50%, #0a0614 100%)",
     overlayGradient:
@@ -242,9 +242,9 @@ const PLAN_META: Record<PlanId, PlanMeta> = {
     liveDotColor: "#8b5cf6",
     labelColor: "rgba(139,92,246,0.55)",
     features: [
-      `${formatINR(500)} daily return`,
-      "15-day active term",
-      `${formatINR(7500)} total profit`,
+      `${formatINR(271)} daily return (9.0%)`,
+      "21-day active term",
+      `${formatINR(8700)} total profit (2.9x)`,
       "Claim every 24 hours",
       "Bank withdrawal support",
       "Priority support",
@@ -254,8 +254,8 @@ const PLAN_META: Record<PlanId, PlanMeta> = {
   supreme: {
     luxuryTag: "SUPREME PLAN",
     luxuryHouse: "Excellence Tier",
-    roiPercent: Math.round((1250 / 7500) * 100 * 10) / 10,
-    multiplier: 2.5,
+    roiPercent: 9.0,
+    multiplier: 2.9,
     tierFill: 70,
     gradient: "linear-gradient(145deg, #060814 0%, #0a0e24 50%, #060814 100%)",
     overlayGradient:
@@ -269,9 +269,9 @@ const PLAN_META: Record<PlanId, PlanMeta> = {
     liveDotColor: "#6366f1",
     labelColor: "rgba(99,102,241,0.55)",
     features: [
-      `${formatINR(1250)} daily return`,
-      "15-day active term",
-      `${formatINR(18750)} total profit`,
+      `${formatINR(679)} daily return (9.0%)`,
+      "21-day active term",
+      `${formatINR(21750)} total profit (2.9x)`,
       "Claim every 24 hours",
       "Bank withdrawal support",
       "Priority support",
@@ -280,10 +280,10 @@ const PLAN_META: Record<PlanId, PlanMeta> = {
   },
   // ── Normal Business Plans ────────────────────────────────
   nb_bronze: {
-    luxuryTag: "NB BRONZE",
-    luxuryHouse: "Business Entry",
-    roiPercent: Math.round((250 / 1500) * 100 * 10) / 10,
-    multiplier: 2.5,
+    luxuryTag: "NIKE SPORT",
+    luxuryHouse: "Performance Drive",
+    roiPercent: 11.1,
+    multiplier: 3.0,
     tierFill: 20,
     gradient: "linear-gradient(145deg, #130800 0%, #211200 50%, #110600 100%)",
     overlayGradient:
@@ -297,19 +297,19 @@ const PLAN_META: Record<PlanId, PlanMeta> = {
     liveDotColor: "#cd7f32",
     labelColor: "rgba(205,127,50,0.6)",
     features: [
-      `${formatINR(250)} daily return`,
-      "15-day active term",
-      `${formatINR(3750)} total profit`,
+      `${formatINR(167)} daily return (11.1%)`,
+      "18-day active term",
+      `${formatINR(4500)} total profit (3x)`,
       "Claim every 24 hours",
       "Business account support",
       "Quick onboarding",
     ],
   },
   nb_silver: {
-    luxuryTag: "NB SILVER",
-    luxuryHouse: "Business Growth",
-    roiPercent: Math.round((667 / 4000) * 100 * 10) / 10,
-    multiplier: 2.5,
+    luxuryTag: "MUFTI EDITION",
+    luxuryHouse: "Urban Denim Tier",
+    roiPercent: 11.1,
+    multiplier: 3.0,
     tierFill: 35,
     gradient: "linear-gradient(145deg, #0d0f14 0%, #161a22 50%, #0b0d12 100%)",
     overlayGradient:
@@ -323,9 +323,9 @@ const PLAN_META: Record<PlanId, PlanMeta> = {
     liveDotColor: "#c0c0c8",
     labelColor: "rgba(192,192,200,0.55)",
     features: [
-      `${formatINR(667)} daily return`,
-      "15-day active term",
-      `${formatINR(10000)} total profit`,
+      `${formatINR(444)} daily return (11.1%)`,
+      "18-day active term",
+      `${formatINR(12000)} total profit (3x)`,
       "Claim every 24 hours",
       "Business account support",
       "Priority processing",
@@ -333,10 +333,10 @@ const PLAN_META: Record<PlanId, PlanMeta> = {
     ],
   },
   nb_gold: {
-    luxuryTag: "NB GOLD",
-    luxuryHouse: "Business Excellence",
-    roiPercent: Math.round((1333 / 8000) * 100 * 10) / 10,
-    multiplier: 2.5,
+    luxuryTag: "GUCCI",
+    luxuryHouse: "Florentine Excellence",
+    roiPercent: 11.1,
+    multiplier: 3.0,
     tierFill: 50,
     gradient: "linear-gradient(145deg, #120e00 0%, #201800 50%, #100c00 100%)",
     overlayGradient:
@@ -350,9 +350,9 @@ const PLAN_META: Record<PlanId, PlanMeta> = {
     liveDotColor: "#ffc800",
     labelColor: "rgba(255,200,0,0.55)",
     features: [
-      `${formatINR(1333)} daily return`,
-      "15-day active term",
-      `${formatINR(20000)} total profit`,
+      `${formatINR(889)} daily return (11.1%)`,
+      "18-day active term",
+      `${formatINR(24000)} total profit (3x)`,
       "Claim every 24 hours",
       "Business account support",
       "Dedicated account manager",
@@ -362,8 +362,8 @@ const PLAN_META: Record<PlanId, PlanMeta> = {
   nb_premium: {
     luxuryTag: "NB PREMIUM",
     luxuryHouse: "Business Premium",
-    roiPercent: Math.round((2500 / 15000) * 100 * 10) / 10,
-    multiplier: 2.5,
+    roiPercent: 11.1,
+    multiplier: 3.0,
     tierFill: 65,
     gradient: "linear-gradient(145deg, #001810 0%, #002818 50%, #001208 100%)",
     overlayGradient:
@@ -377,9 +377,9 @@ const PLAN_META: Record<PlanId, PlanMeta> = {
     liveDotColor: "#10b981",
     labelColor: "rgba(16,185,129,0.55)",
     features: [
-      `${formatINR(2500)} daily return`,
-      "15-day active term",
-      `${formatINR(37500)} total profit`,
+      `${formatINR(1667)} daily return (11.1%)`,
+      "18-day active term",
+      `${formatINR(45000)} total profit (3x)`,
       "Claim every 24 hours",
       "Premium business perks",
       "Priority withdrawals",
@@ -389,8 +389,8 @@ const PLAN_META: Record<PlanId, PlanMeta> = {
   nb_elite: {
     luxuryTag: "NB ELITE",
     luxuryHouse: "Business Elite",
-    roiPercent: Math.round((5000 / 30000) * 100 * 10) / 10,
-    multiplier: 2.5,
+    roiPercent: 11.1,
+    multiplier: 3.0,
     tierFill: 80,
     gradient: "linear-gradient(145deg, #001018 0%, #001a28 50%, #000c12 100%)",
     overlayGradient:
@@ -404,9 +404,9 @@ const PLAN_META: Record<PlanId, PlanMeta> = {
     liveDotColor: "#06b6d4",
     labelColor: "rgba(6,182,212,0.55)",
     features: [
-      `${formatINR(5000)} daily return`,
-      "15-day active term",
-      `${formatINR(75000)} total profit`,
+      `${formatINR(3333)} daily return (11.1%)`,
+      "18-day active term",
+      `${formatINR(90000)} total profit (3x)`,
       "Claim every 24 hours",
       "Elite business membership",
       "Instant withdrawals",
@@ -418,8 +418,8 @@ const PLAN_META: Record<PlanId, PlanMeta> = {
   vip_silver: {
     luxuryTag: "VIP SILVER",
     luxuryHouse: "VIP Entry",
-    roiPercent: Math.round((3333 / 20000) * 100 * 10) / 10,
-    multiplier: 2.5,
+    roiPercent: 26.7,
+    multiplier: 5,
     tierFill: 30,
     gradient: "linear-gradient(145deg, #0c0c10 0%, #181820 50%, #0a0a0e 100%)",
     overlayGradient:
@@ -433,9 +433,9 @@ const PLAN_META: Record<PlanId, PlanMeta> = {
     liveDotColor: "#dcdcf0",
     labelColor: "rgba(220,220,240,0.55)",
     features: [
-      `${formatINR(3333)} daily return`,
+      `${formatINR(5333)} daily return (26.7%)`,
       "15-day active term",
-      `${formatINR(50000)} total profit`,
+      `${formatINR(100000)} total profit (5x)`,
       "Claim every 24 hours",
       "VIP member access",
       "Priority support 24/7",
@@ -443,10 +443,10 @@ const PLAN_META: Record<PlanId, PlanMeta> = {
     ],
   },
   vip_gold: {
-    luxuryTag: "VIP GOLD",
-    luxuryHouse: "VIP Premium",
-    roiPercent: Math.round((6667 / 40000) * 100 * 10) / 10,
-    multiplier: 2.5,
+    luxuryTag: "LVMH PRESTIGE",
+    luxuryHouse: "Maison des Arts",
+    roiPercent: 26.7,
+    multiplier: 5,
     tierFill: 45,
     gradient: "linear-gradient(145deg, #160e00 0%, #261800 50%, #140c00 100%)",
     overlayGradient:
@@ -460,9 +460,9 @@ const PLAN_META: Record<PlanId, PlanMeta> = {
     liveDotColor: "#f59e0b",
     labelColor: "rgba(245,158,11,0.6)",
     features: [
-      `${formatINR(6667)} daily return`,
+      `${formatINR(10667)} daily return (26.7%)`,
       "15-day active term",
-      `${formatINR(100000)} total profit`,
+      `${formatINR(200000)} total profit (5x)`,
       "Claim every 24 hours",
       "VIP gold membership",
       "Exclusive investment perks",
@@ -473,8 +473,8 @@ const PLAN_META: Record<PlanId, PlanMeta> = {
   vip_platinum: {
     luxuryTag: "VIP PLATINUM",
     luxuryHouse: "VIP Elite",
-    roiPercent: Math.round((12500 / 75000) * 100 * 10) / 10,
-    multiplier: 2.5,
+    roiPercent: 26.7,
+    multiplier: 5,
     tierFill: 58,
     gradient: "linear-gradient(145deg, #080018 0%, #100030 50%, #060010 100%)",
     overlayGradient:
@@ -488,9 +488,9 @@ const PLAN_META: Record<PlanId, PlanMeta> = {
     liveDotColor: "#a78bfa",
     labelColor: "rgba(167,139,250,0.6)",
     features: [
-      `${formatINR(12500)} daily return`,
+      `${formatINR(20000)} daily return (26.7%)`,
       "15-day active term",
-      `${formatINR(187500)} total profit`,
+      `${formatINR(375000)} total profit (5x)`,
       "Claim every 24 hours",
       "Platinum VIP membership",
       "White-glove support",
@@ -501,8 +501,8 @@ const PLAN_META: Record<PlanId, PlanMeta> = {
   vip_diamond: {
     luxuryTag: "VIP DIAMOND",
     luxuryHouse: "VIP Prestige",
-    roiPercent: Math.round((25000 / 150000) * 100 * 10) / 10,
-    multiplier: 2.5,
+    roiPercent: 26.7,
+    multiplier: 5,
     tierFill: 68,
     gradient: "linear-gradient(145deg, #00101e 0%, #001c34 50%, #000c16 100%)",
     overlayGradient:
@@ -516,9 +516,9 @@ const PLAN_META: Record<PlanId, PlanMeta> = {
     liveDotColor: "#38bdf8",
     labelColor: "rgba(56,189,248,0.6)",
     features: [
-      `${formatINR(25000)} daily return`,
+      `${formatINR(40000)} daily return (26.7%)`,
       "15-day active term",
-      `${formatINR(375000)} total profit`,
+      `${formatINR(750000)} total profit (5x)`,
       "Claim every 24 hours",
       "Diamond VIP membership",
       "Concierge investment service",
@@ -529,8 +529,8 @@ const PLAN_META: Record<PlanId, PlanMeta> = {
   vip_black: {
     luxuryTag: "VIP BLACK CARD",
     luxuryHouse: "VIP Prestige Black",
-    roiPercent: Math.round((50000 / 300000) * 100 * 10) / 10,
-    multiplier: 2.5,
+    roiPercent: 26.7,
+    multiplier: 5,
     tierFill: 80,
     gradient: "linear-gradient(145deg, #050505 0%, #0c0c0c 50%, #030303 100%)",
     overlayGradient:
@@ -544,9 +544,9 @@ const PLAN_META: Record<PlanId, PlanMeta> = {
     liveDotColor: "#e5e5e5",
     labelColor: "rgba(220,220,220,0.6)",
     features: [
-      `${formatINR(50000)} daily return`,
+      `${formatINR(80000)} daily return (26.7%)`,
       "15-day active term",
-      `${formatINR(750000)} total profit`,
+      `${formatINR(1500000)} total profit (5x)`,
       "Claim every 24 hours",
       "Black card VIP membership",
       "Ultra-exclusive access",
@@ -558,8 +558,8 @@ const PLAN_META: Record<PlanId, PlanMeta> = {
   vip_royal: {
     luxuryTag: "VIP ROYAL",
     luxuryHouse: "Supreme Royal Tier",
-    roiPercent: Math.round((83333 / 500000) * 100 * 10) / 10,
-    multiplier: 2.5,
+    roiPercent: 26.7,
+    multiplier: 5,
     tierFill: 95,
     gradient: "linear-gradient(145deg, #1a0018 0%, #2e0030 50%, #140010 100%)",
     overlayGradient:
@@ -573,9 +573,9 @@ const PLAN_META: Record<PlanId, PlanMeta> = {
     liveDotColor: "#ec4899",
     labelColor: "rgba(236,72,153,0.65)",
     features: [
-      `${formatINR(83333)} daily return`,
+      `${formatINR(133333)} daily return (26.7%)`,
       "15-day active term",
-      `${formatINR(1250000)} total profit`,
+      `${formatINR(2500000)} total profit (5x)`,
       "Claim every 24 hours",
       "Royal VIP membership",
       "Invite-only tier",
@@ -606,7 +606,7 @@ const SECTIONS: PlanSection[] = [
   {
     id: "classic",
     label: "Classic",
-    subtitle: "Entry & growth plans for every investor",
+    subtitle: "Entry & growth plans — 21-day term — 2.9x return",
     icon: <Star className="w-4 h-4" />,
     plans: [
       "mini",
@@ -627,7 +627,8 @@ const SECTIONS: PlanSection[] = [
   {
     id: "normal_business",
     label: "Normal Business",
-    subtitle: "Structured plans for business-minded investors",
+    subtitle:
+      "Structured plans for business-minded investors — 18-day term — 3x return",
     icon: <Shield className="w-4 h-4" />,
     plans: ["nb_bronze", "nb_silver", "nb_gold", "nb_premium", "nb_elite"],
     headerGradient:
@@ -638,7 +639,8 @@ const SECTIONS: PlanSection[] = [
   {
     id: "vip",
     label: "VIP",
-    subtitle: "Exclusive high-return plans for elite investors",
+    subtitle:
+      "Exclusive high-return plans for elite investors — 15-day term — 5x return",
     icon: <Crown className="w-4 h-4" />,
     plans: [
       "vip_silver",
@@ -654,6 +656,608 @@ const SECTIONS: PlanSection[] = [
     badgeText: "6 PLANS",
   },
 ];
+
+// ── Brand Animation CSS ─────────────────────────────────────────
+
+const BRAND_KEYFRAMES = `
+@keyframes adidasStripes {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 100% 50%; }
+}
+@keyframes adidasSweep {
+  0%   { transform: translateX(-120%) skewX(-18deg); opacity: 0; }
+  30%  { opacity: 1; }
+  70%  { opacity: 1; }
+  100% { transform: translateX(220%) skewX(-18deg); opacity: 0; }
+}
+@keyframes balenciagaScan {
+  0%   { transform: translateY(-100%); opacity: 0; }
+  15%  { opacity: 0.08; }
+  85%  { opacity: 0.08; }
+  100% { transform: translateY(200%); opacity: 0; }
+}
+@keyframes balenciagaB {
+  0%, 100% { opacity: 0.04; }
+  50%       { opacity: 0.10; }
+}
+@keyframes bossGrid {
+  0%, 100% { opacity: 0.04; }
+  50%       { opacity: 0.08; }
+}
+@keyframes versaceSunburst {
+  0%   { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+@keyframes tiffanyFloat1 {
+  0%   { transform: translate(0px, 0px); opacity: 0.7; }
+  33%  { transform: translate(6px, -12px); opacity: 1; }
+  66%  { transform: translate(-4px, -22px); opacity: 0.6; }
+  100% { transform: translate(2px, -36px); opacity: 0; }
+}
+@keyframes tiffanyFloat2 {
+  0%   { transform: translate(0px, 0px); opacity: 0.5; }
+  40%  { transform: translate(-8px, -14px); opacity: 0.9; }
+  80%  { transform: translate(4px, -28px); opacity: 0.4; }
+  100% { transform: translate(-2px, -40px); opacity: 0; }
+}
+@keyframes tiffanyFloat3 {
+  0%   { transform: translate(0px, 0px); opacity: 0.8; }
+  50%  { transform: translate(10px, -18px); opacity: 0.6; }
+  100% { transform: translate(3px, -34px); opacity: 0; }
+}
+@keyframes lvScroll {
+  0%   { background-position: 0% 0%; }
+  100% { background-position: 56px 56px; }
+}
+@keyframes glowPulse {
+  0%, 100% { opacity: 0.25; transform: scale(0.95); }
+  50%       { opacity: 0.5; transform: scale(1.05); }
+}
+@keyframes waveFlow {
+  0%   { background-position: 0% 80%; }
+  50%  { background-position: 100% 80%; }
+  100% { background-position: 0% 80%; }
+}
+@keyframes nikeSwoosh {
+  0%   { transform: translateX(-140%) skewX(-24deg); opacity: 0; }
+  20%  { opacity: 1; }
+  80%  { opacity: 1; }
+  100% { transform: translateX(240%) skewX(-24deg); opacity: 0; }
+}
+@keyframes muftiDenim {
+  0%   { background-position: 0 0; }
+  100% { background-position: 80px 80px; }
+}
+@keyframes gucciRotate {
+  0%   { transform: translate(-50%, -50%) rotate(0deg); }
+  100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+@keyframes lvmhParticle1 {
+  0%   { transform: translate(0px, 0px); opacity: 0.8; }
+  50%  { transform: translate(12px, -20px); opacity: 0.4; }
+  100% { transform: translate(5px, -38px); opacity: 0; }
+}
+@keyframes lvmhParticle2 {
+  0%   { transform: translate(0px, 0px); opacity: 0.6; }
+  50%  { transform: translate(-10px, -15px); opacity: 0.9; }
+  100% { transform: translate(-3px, -32px); opacity: 0; }
+}
+@keyframes lvmhParticle3 {
+  0%   { transform: translate(0px, 0px); opacity: 0.9; }
+  50%  { transform: translate(8px, -24px); opacity: 0.5; }
+  100% { transform: translate(14px, -40px); opacity: 0; }
+}
+@keyframes vipTwinkle {
+  0%, 100% { opacity: 0.1; transform: scale(0.6); }
+  50%       { opacity: 0.8; transform: scale(1.2); }
+}
+@keyframes vipShimmer {
+  0%   { transform: translateX(-120%) skewX(-12deg); }
+  100% { transform: translateX(220%) skewX(-12deg); }
+}
+@keyframes liveDotPulse {
+  0%, 100% { box-shadow: 0 0 0 0px currentColor; }
+  50%       { box-shadow: 0 0 0 4px transparent; }
+}
+`;
+
+type BrandAnimId =
+  | "adidas"
+  | "balenciaga"
+  | "hugo_boss"
+  | "versace"
+  | "tiffany"
+  | "louis_vuitton"
+  | "basic_glow"
+  | "nb_wave"
+  | "nike"
+  | "mufti"
+  | "gucci"
+  | "lvmh"
+  | "vip_sparkle";
+
+const PLAN_BRAND_ANIM: Partial<Record<PlanId, BrandAnimId>> = {
+  mini: "adidas",
+  starter: "balenciaga",
+  silver: "hugo_boss",
+  gold: "versace",
+  diamond: "tiffany",
+  platinum: "louis_vuitton",
+  basic: "basic_glow",
+  pro: "basic_glow",
+  supreme: "basic_glow",
+  nb_bronze: "nike",
+  nb_silver: "mufti",
+  nb_gold: "gucci",
+  nb_premium: "nb_wave",
+  nb_elite: "nb_wave",
+  vip_silver: "vip_sparkle",
+  vip_gold: "lvmh",
+  vip_platinum: "vip_sparkle",
+  vip_diamond: "vip_sparkle",
+  vip_black: "vip_sparkle",
+  vip_royal: "vip_sparkle",
+};
+
+function BrandAnimOverlay({
+  planId,
+  accentColor,
+}: {
+  planId: PlanId;
+  accentColor: string;
+}) {
+  const animId = PLAN_BRAND_ANIM[planId];
+  if (!animId) return null;
+
+  switch (animId) {
+    case "adidas":
+      return (
+        <>
+          {/* Three diagonal stripes sweeping across */}
+          {(["s0", "s1", "s2"] as const).map((key, i) => (
+            <div
+              key={key}
+              className="absolute inset-y-0 pointer-events-none"
+              style={{
+                left: `${18 + i * 14}%`,
+                width: "8%",
+                background:
+                  "linear-gradient(180deg, transparent 0%, rgba(255,255,255,0.07) 30%, rgba(255,255,255,0.07) 70%, transparent 100%)",
+                animation: `adidasSweep ${3.5 + i * 0.6}s ease-in-out ${i * 1.1}s infinite`,
+              }}
+            />
+          ))}
+        </>
+      );
+
+    case "balenciaga":
+      return (
+        <>
+          {/* Bold B watermark */}
+          <div
+            className="absolute pointer-events-none select-none"
+            style={{
+              right: "10px",
+              bottom: "10px",
+              fontSize: "96px",
+              fontWeight: 900,
+              lineHeight: 1,
+              color: "rgba(200,200,220,0.08)",
+              fontFamily: "serif",
+              animation: "balenciagaB 4s ease-in-out infinite",
+              userSelect: "none",
+            }}
+          >
+            B
+          </div>
+          {/* Horizontal scan line */}
+          <div
+            className="absolute left-0 right-0 pointer-events-none"
+            style={{
+              height: "2px",
+              background:
+                "linear-gradient(90deg, transparent, rgba(200,200,220,0.15), transparent)",
+              animation: "balenciagaScan 5s linear infinite",
+              top: "0",
+            }}
+          />
+        </>
+      );
+
+    case "hugo_boss":
+      return (
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            backgroundImage: `
+              linear-gradient(rgba(160,185,210,0.04) 1px, transparent 1px),
+              linear-gradient(90deg, rgba(160,185,210,0.04) 1px, transparent 1px)
+            `,
+            backgroundSize: "24px 24px",
+            animation: "bossGrid 4s ease-in-out infinite",
+          }}
+        />
+      );
+
+    case "versace":
+      return (
+        <div
+          className="absolute pointer-events-none"
+          style={{
+            top: "50%",
+            left: "50%",
+            width: "160px",
+            height: "160px",
+            transform: "translate(-50%, -50%)",
+            animation: "versaceSunburst 12s linear infinite",
+          }}
+        >
+          {[0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330].map(
+            (deg) => (
+              <div
+                key={`ray-${deg}`}
+                className="absolute"
+                style={{
+                  top: "50%",
+                  left: "50%",
+                  width: "1px",
+                  height: "80px",
+                  transformOrigin: "top center",
+                  transform: `rotate(${deg}deg) translateX(-50%)`,
+                  background:
+                    "linear-gradient(180deg, rgba(218,165,32,0.12) 0%, transparent 100%)",
+                }}
+              />
+            ),
+          )}
+        </div>
+      );
+
+    case "tiffany":
+      return (
+        <>
+          {[
+            {
+              key: "td1",
+              left: "20%",
+              top: "25%",
+              delay: "0s",
+              dur: "3.5s",
+              anim: "tiffanyFloat1",
+            },
+            {
+              key: "td2",
+              left: "60%",
+              top: "55%",
+              delay: "1.2s",
+              dur: "4s",
+              anim: "tiffanyFloat2",
+            },
+            {
+              key: "td3",
+              left: "75%",
+              top: "20%",
+              delay: "0.6s",
+              dur: "3.2s",
+              anim: "tiffanyFloat3",
+            },
+            {
+              key: "td4",
+              left: "35%",
+              top: "70%",
+              delay: "1.8s",
+              dur: "3.8s",
+              anim: "tiffanyFloat1",
+            },
+            {
+              key: "td5",
+              left: "50%",
+              top: "40%",
+              delay: "2.4s",
+              dur: "4.2s",
+              anim: "tiffanyFloat2",
+            },
+          ].map((p) => (
+            <div
+              key={p.key}
+              className="absolute pointer-events-none"
+              style={{
+                left: p.left,
+                top: p.top,
+                width: "5px",
+                height: "5px",
+                borderRadius: "50%",
+                background: "#00c3b4",
+                boxShadow: "0 0 6px 2px rgba(0,195,180,0.5)",
+                animation: `${p.anim} ${p.dur} ease-in-out ${p.delay} infinite`,
+              }}
+            />
+          ))}
+        </>
+      );
+
+    case "louis_vuitton":
+      return (
+        <div
+          className="absolute inset-0 pointer-events-none opacity-40"
+          style={{
+            backgroundImage: `
+              repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 10px,
+                rgba(200,150,50,0.04) 10px,
+                rgba(200,150,50,0.04) 12px
+              ),
+              repeating-linear-gradient(
+                -45deg,
+                transparent,
+                transparent 10px,
+                rgba(200,150,50,0.04) 10px,
+                rgba(200,150,50,0.04) 12px
+              )
+            `,
+            backgroundSize: "28px 28px",
+            animation: "lvScroll 6s linear infinite",
+          }}
+        />
+      );
+
+    case "basic_glow":
+      return (
+        <div
+          className="absolute pointer-events-none rounded-full"
+          style={{
+            top: "50%",
+            left: "50%",
+            width: "180px",
+            height: "180px",
+            transform: "translate(-50%, -50%)",
+            background: `radial-gradient(circle, ${accentColor}20 0%, transparent 70%)`,
+            animation: "glowPulse 3s ease-in-out infinite",
+          }}
+        />
+      );
+
+    case "nb_wave":
+      return (
+        <div
+          className="absolute bottom-0 left-0 right-0 h-16 pointer-events-none"
+          style={{
+            background: `linear-gradient(90deg, ${accentColor}00 0%, ${accentColor}18 25%, ${accentColor}08 50%, ${accentColor}18 75%, ${accentColor}00 100%)`,
+            backgroundSize: "200% 100%",
+            animation: "waveFlow 4s ease-in-out infinite",
+          }}
+        />
+      );
+
+    case "nike":
+      return (
+        <>
+          {/* Nike swoosh-style diagonal speed lines */}
+          {[
+            { k: "n0", left: "25%", w: "10%", dur: "2.8s", delay: "0s" },
+            { k: "n1", left: "45%", w: "15%", dur: "3.5s", delay: "1.4s" },
+          ].map((line) => (
+            <div
+              key={line.k}
+              className="absolute inset-y-0 pointer-events-none"
+              style={{
+                left: line.left,
+                width: line.w,
+                background:
+                  "linear-gradient(180deg, transparent 0%, rgba(255,120,0,0.12) 40%, rgba(220,50,0,0.12) 60%, transparent 100%)",
+                animation: `nikeSwoosh ${line.dur} ease-in-out ${line.delay} infinite`,
+              }}
+            />
+          ))}
+        </>
+      );
+
+    case "mufti":
+      return (
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            backgroundImage: `
+              repeating-linear-gradient(
+                -55deg,
+                transparent,
+                transparent 8px,
+                rgba(192,192,200,0.04) 8px,
+                rgba(192,192,200,0.04) 10px
+              )
+            `,
+            backgroundSize: "40px 40px",
+            animation: "muftiDenim 8s linear infinite",
+          }}
+        />
+      );
+
+    case "gucci":
+      return (
+        <>
+          {/* Interlocking GG-style overlapping circles */}
+          {[
+            {
+              key: "gg1",
+              cx: "35%",
+              cy: "50%",
+              r: "38px",
+              delay: "0s",
+              dur: "8s",
+            },
+            {
+              key: "gg2",
+              cx: "65%",
+              cy: "50%",
+              r: "38px",
+              delay: "0s",
+              dur: "11s",
+            },
+          ].map((c) => (
+            <div
+              key={c.key}
+              className="absolute pointer-events-none"
+              style={{
+                left: c.cx,
+                top: c.cy,
+                width: c.r,
+                height: c.r,
+                transform: "translate(-50%, -50%)",
+                border: "2px solid rgba(255,200,0,0.1)",
+                borderRadius: "50%",
+                animation: `gucciRotate ${c.dur} linear ${c.delay} infinite`,
+              }}
+            />
+          ))}
+          <div
+            className="absolute pointer-events-none"
+            style={{
+              left: "50%",
+              top: "50%",
+              width: "70px",
+              height: "70px",
+              transform: "translate(-50%, -50%)",
+              border: "1.5px solid rgba(255,200,0,0.07)",
+              borderRadius: "50%",
+              animation: "gucciRotate 5s linear reverse infinite",
+            }}
+          />
+        </>
+      );
+
+    case "lvmh":
+      return (
+        <>
+          {/* Golden particle field */}
+          {[
+            {
+              key: "lv1",
+              left: "15%",
+              top: "30%",
+              dur: "3.8s",
+              delay: "0s",
+              anim: "lvmhParticle1",
+            },
+            {
+              key: "lv2",
+              left: "50%",
+              top: "60%",
+              dur: "4.2s",
+              delay: "1.0s",
+              anim: "lvmhParticle2",
+            },
+            {
+              key: "lv3",
+              left: "80%",
+              top: "25%",
+              dur: "3.4s",
+              delay: "0.5s",
+              anim: "lvmhParticle3",
+            },
+            {
+              key: "lv4",
+              left: "30%",
+              top: "75%",
+              dur: "4.5s",
+              delay: "2.0s",
+              anim: "lvmhParticle1",
+            },
+            {
+              key: "lv5",
+              left: "70%",
+              top: "45%",
+              dur: "3.6s",
+              delay: "1.5s",
+              anim: "lvmhParticle2",
+            },
+          ].map((p) => (
+            <div
+              key={p.key}
+              className="absolute pointer-events-none"
+              style={{
+                left: p.left,
+                top: p.top,
+                width: "4px",
+                height: "4px",
+                borderRadius: "50%",
+                background: "#f59e0b",
+                boxShadow: "0 0 8px 2px rgba(245,158,11,0.6)",
+                animation: `${p.anim} ${p.dur} ease-in-out ${p.delay} infinite`,
+              }}
+            />
+          ))}
+          {/* LV-style diamond lattice */}
+          <div
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              backgroundImage: `
+                repeating-linear-gradient(
+                  45deg,
+                  transparent,
+                  transparent 12px,
+                  rgba(245,158,11,0.04) 12px,
+                  rgba(245,158,11,0.04) 14px
+                ),
+                repeating-linear-gradient(
+                  -45deg,
+                  transparent,
+                  transparent 12px,
+                  rgba(245,158,11,0.04) 12px,
+                  rgba(245,158,11,0.04) 14px
+                )
+              `,
+              backgroundSize: "28px 28px",
+            }}
+          />
+        </>
+      );
+
+    case "vip_sparkle":
+      return (
+        <>
+          {/* Star/sparkle twinkling field */}
+          {[
+            { k: "vs1", l: "12%", t: "18%", d: "0s", s: "2.4s" },
+            { k: "vs2", l: "28%", t: "65%", d: "0.7s", s: "3.1s" },
+            { k: "vs3", l: "48%", t: "32%", d: "1.4s", s: "2.8s" },
+            { k: "vs4", l: "68%", t: "72%", d: "0.3s", s: "3.5s" },
+            { k: "vs5", l: "82%", t: "22%", d: "1.8s", s: "2.6s" },
+            { k: "vs6", l: "90%", t: "55%", d: "1.1s", s: "3.2s" },
+            { k: "vs7", l: "55%", t: "88%", d: "2.2s", s: "2.9s" },
+          ].map((star) => (
+            <div
+              key={star.k}
+              className="absolute pointer-events-none"
+              style={{
+                left: star.l,
+                top: star.t,
+                width: "3px",
+                height: "3px",
+                borderRadius: "50%",
+                background: accentColor,
+                boxShadow: `0 0 6px 2px ${accentColor}80`,
+                animation: `vipTwinkle ${star.s} ease-in-out ${star.d} infinite`,
+              }}
+            />
+          ))}
+          {/* Shimmer sweep */}
+          <div
+            className="absolute inset-y-0 pointer-events-none"
+            style={{
+              width: "40%",
+              background: `linear-gradient(90deg, transparent, ${accentColor}08, transparent)`,
+              animation: "vipShimmer 4s ease-in-out infinite",
+            }}
+          />
+        </>
+      );
+
+    default:
+      return null;
+  }
+}
 
 // ── Plan Card Component ─────────────────────────────────────────
 
@@ -711,6 +1315,8 @@ function PlanCard({
           className="absolute inset-0 pointer-events-none"
           style={{ background: meta.overlayGradient }}
         />
+        {/* Brand animation overlay */}
+        <BrandAnimOverlay planId={planId} accentColor={meta.accentColor} />
         {isTop && (
           <div
             className="absolute top-0 left-0 right-0 h-[2px] pointer-events-none"
@@ -837,7 +1443,7 @@ function PlanCard({
               className="font-sans text-[10px]"
               style={{ color: "rgba(255,255,255,0.32)" }}
             >
-              15 days = {formatINR(plan.totalReturn)} total profit
+              {plan.termDays} days = {formatINR(plan.totalReturn)} total profit
             </div>
           </div>
 
@@ -975,6 +1581,19 @@ export function Plans() {
   const investMutation = useCreateInvestment(userId);
   const [activeSection, setActiveSection] = useState<SectionId>("classic");
 
+  // Inject brand animation keyframes once into <head>
+  useEffect(() => {
+    const styleId = "investpro-brand-keyframes";
+    if (document.getElementById(styleId)) return;
+    const el = document.createElement("style");
+    el.id = styleId;
+    el.textContent = BRAND_KEYFRAMES;
+    document.head.appendChild(el);
+    return () => {
+      document.getElementById(styleId)?.remove();
+    };
+  }, []);
+
   const balance = userData?.wallet.balance ?? 0;
 
   async function handleInvest(planId: PlanId) {
@@ -1058,8 +1677,9 @@ export function Plans() {
             className="font-sans text-sm max-w-lg mx-auto leading-relaxed"
             style={{ color: "rgba(255,255,255,0.4)" }}
           >
-            20 investment plans across 3 sections — Classic, Normal Business,
-            and VIP. Fixed daily returns, claim every 24 hours over 15 days.
+            20 investment plans across 3 sections — Classic 2.9x (21 days),
+            Normal Business 3x (18 days), VIP 5x (15 days). Fixed daily returns,
+            claim every 24 hours.
           </p>
 
           <div className="flex items-center justify-center gap-3 pt-1">
@@ -1266,7 +1886,7 @@ export function Plans() {
               style={{ color: "rgba(255,255,255,0.45)" }}
             >
               <Zap className="w-4 h-4" style={{ color: "#a78bfa" }} />
-              <span>20 plans across Classic, Business & VIP</span>
+              <span>Classic 21d · Business 18d · VIP 15d</span>
             </div>
           </div>
         </div>

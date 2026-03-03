@@ -209,8 +209,8 @@ export function verifyOTP(
   // Persist the mobile number for this device so future visits auto-login
   localStorage.setItem(DEVICE_MOBILE_KEY, mobile);
 
-  // Mark session as authenticated
-  sessionStorage.setItem(MOBILE_SESSION_KEY, mobile);
+  // Mark session as authenticated — persisted in localStorage so it survives browser close
+  localStorage.setItem(MOBILE_SESSION_KEY, mobile);
   localStorage.setItem("investpro_mobile_user", mobile);
 
   return { success: true, message: "OTP verified successfully!" };
@@ -242,22 +242,22 @@ export function getAutoLoginMobile(): string | null {
 // ── Session helpers ───────────────────────────────────────────
 
 export function getMobileSession(): string | null {
-  // First check in-memory session
-  const session = sessionStorage.getItem(MOBILE_SESSION_KEY);
+  // Check localStorage first — persists across browser close/reopen
+  const session = localStorage.getItem(MOBILE_SESSION_KEY);
   if (session) return session;
 
-  // Try auto-login from device lock
+  // Fall back to auto-login from device lock
   const autoMobile = getAutoLoginMobile();
   if (autoMobile) {
     // Restore session silently
-    sessionStorage.setItem(MOBILE_SESSION_KEY, autoMobile);
+    localStorage.setItem(MOBILE_SESSION_KEY, autoMobile);
     return autoMobile;
   }
   return null;
 }
 
 export function clearMobileSession(): void {
-  sessionStorage.removeItem(MOBILE_SESSION_KEY);
+  localStorage.removeItem(MOBILE_SESSION_KEY);
   // Note: we intentionally keep DEVICE_MOBILE_KEY and MOBILE_DEVICE_MAP_KEY
   // so the device stays locked to this number. Only clear the active session.
   localStorage.removeItem("investpro_mobile_user");
