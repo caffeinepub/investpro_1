@@ -136,16 +136,16 @@ export function RoyalPass() {
           />
         ))}
 
-        <div className="relative z-10 px-4 pt-10 pb-12 text-center max-w-2xl mx-auto">
+        <div className="relative z-10 px-4 pt-7 pb-8 text-center max-w-2xl mx-auto">
           {/* Crown icon */}
           <motion.div
-            className="flex justify-center mb-6"
+            className="flex justify-center mb-4"
             initial={{ scale: 0, rotate: -20 }}
             animate={{ scale: 1, rotate: 0 }}
             transition={{ type: "spring", stiffness: 300, damping: 20 }}
           >
             <div
-              className="p-5 rounded-2xl"
+              className="p-4 rounded-2xl"
               style={{
                 background:
                   "linear-gradient(135deg, oklch(0.78 0.16 75 / 0.2), oklch(0.85 0.2 78 / 0.1))",
@@ -155,7 +155,7 @@ export function RoyalPass() {
               }}
             >
               <Crown
-                className="w-12 h-12"
+                className="w-10 h-10"
                 style={{ color: "oklch(0.85 0.2 78)" }}
               />
             </div>
@@ -182,7 +182,7 @@ export function RoyalPass() {
 
           {/* Title */}
           <motion.h1
-            className="font-display text-5xl sm:text-6xl font-black mb-3 tracking-tight"
+            className="font-display text-4xl sm:text-5xl font-black mb-2 tracking-tight"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
@@ -198,7 +198,7 @@ export function RoyalPass() {
           </motion.h1>
 
           <motion.p
-            className="text-muted-foreground text-base mb-6 max-w-sm mx-auto leading-relaxed"
+            className="text-muted-foreground text-sm mb-4 max-w-sm mx-auto leading-relaxed"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
@@ -209,14 +209,14 @@ export function RoyalPass() {
 
           {/* Price tag */}
           <motion.div
-            className="flex justify-center items-baseline gap-2 mb-8"
+            className="flex justify-center items-baseline gap-2 mb-5"
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.35 }}
           >
             <span className="text-muted-foreground text-sm">Only</span>
             <span
-              className="font-display text-5xl font-black"
+              className="font-display text-4xl font-black"
               style={{ color: "oklch(0.85 0.2 78)" }}
             >
               ₹1,999
@@ -285,9 +285,9 @@ export function RoyalPass() {
       </div>
 
       {/* Benefits Section */}
-      <div className="px-4 py-10 max-w-2xl mx-auto">
+      <div className="px-4 py-6 max-w-2xl mx-auto">
         <motion.div
-          className="flex items-center gap-3 mb-6"
+          className="flex items-center gap-3 mb-4"
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
@@ -330,11 +330,11 @@ export function RoyalPass() {
                     background: "oklch(0.12 0.022 285)",
                   }}
                 >
-                  <CardContent className="p-4 flex items-start gap-4">
+                  <CardContent className="p-3.5 flex items-start gap-3">
                     <div
-                      className={`p-2.5 rounded-xl flex-shrink-0 ${benefit.bg} ${benefit.border} border`}
+                      className={`p-2 rounded-xl flex-shrink-0 ${benefit.bg} ${benefit.border} border`}
                     >
-                      <Icon className={`w-5 h-5 ${benefit.color}`} />
+                      <Icon className={`w-4 h-4 ${benefit.color}`} />
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-0.5">
@@ -382,13 +382,13 @@ export function RoyalPass() {
         {/* Bottom CTA (sticky feel) */}
         {!hasRoyalPass && (
           <motion.div
-            className="mt-10 text-center"
+            className="mt-6 text-center"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1.0 }}
           >
             <div
-              className="rounded-2xl p-6 mb-6"
+              className="rounded-2xl p-4 mb-4"
               style={{
                 background:
                   "linear-gradient(135deg, oklch(0.1 0.04 75 / 0.6), oklch(0.08 0.02 285 / 0.8))",
@@ -396,19 +396,19 @@ export function RoyalPass() {
               }}
             >
               <Crown
-                className="w-8 h-8 mx-auto mb-3"
+                className="w-7 h-7 mx-auto mb-2.5"
                 style={{ color: "oklch(0.85 0.2 78)" }}
               />
               <p
-                className="font-display font-bold text-xl mb-1"
+                className="font-display font-bold text-lg mb-1"
                 style={{ color: "oklch(0.85 0.2 78)" }}
               >
                 Ready to go Royal?
               </p>
-              <p className="text-sm text-muted-foreground mb-4">
+              <p className="text-xs text-muted-foreground mb-3">
                 Join thousands of premium investors with exclusive access
               </p>
-              <div className="flex items-center justify-center gap-4 text-xs text-muted-foreground mb-5">
+              <div className="flex items-center justify-center gap-4 text-xs text-muted-foreground mb-4">
                 <span className="flex items-center gap-1">
                   <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
                   Instant activation
@@ -450,7 +450,7 @@ export function RoyalPass() {
 
         {hasRoyalPass && (
           <motion.div
-            className="mt-8 text-center p-6 rounded-2xl"
+            className="mt-5 text-center p-4 rounded-2xl"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1.0 }}
@@ -461,16 +461,16 @@ export function RoyalPass() {
             }}
           >
             <Crown
-              className="w-10 h-10 mx-auto mb-3"
+              className="w-8 h-8 mx-auto mb-2.5"
               style={{ color: "oklch(0.85 0.2 78)" }}
             />
             <p
-              className="font-display font-bold text-xl mb-1"
+              className="font-display font-bold text-lg mb-1"
               style={{ color: "oklch(0.85 0.2 78)" }}
             >
               Royal Pass Active ✓
             </p>
-            <p className="text-sm text-muted-foreground mb-4">
+            <p className="text-xs text-muted-foreground mb-3">
               All 6 premium features are unlocked and ready to use
             </p>
             <div className="flex flex-wrap justify-center gap-2">

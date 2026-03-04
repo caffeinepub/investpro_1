@@ -266,22 +266,22 @@ export function Deposit() {
   }
 
   return (
-    <div className="p-4 lg:p-8 max-w-2xl mx-auto">
+    <div className="p-3 lg:p-5 max-w-2xl mx-auto">
       {/* Header */}
       <motion.div
-        className="mb-8"
+        className="mb-5"
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
       >
-        <div className="flex items-center gap-3 mb-2">
-          <div className="p-2 bg-primary/10 rounded-lg">
-            <ArrowDownCircle className="w-5 h-5 text-primary" />
+        <div className="flex items-center gap-2.5 mb-1.5">
+          <div className="p-1.5 bg-primary/10 rounded-lg">
+            <ArrowDownCircle className="w-4 h-4 text-primary" />
           </div>
           <div>
-            <h1 className="font-display text-2xl font-bold text-foreground">
+            <h1 className="font-display text-xl font-bold text-foreground">
               Deposit Funds
             </h1>
-            <p className="text-muted-foreground text-sm">
+            <p className="text-muted-foreground text-xs">
               Add money to your InvestPro wallet
             </p>
           </div>
@@ -293,15 +293,15 @@ export function Deposit() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
-        className="mb-6"
+        className="mb-4"
       >
         <Card className="border-primary/20 bg-primary/5">
-          <CardContent className="p-4 flex items-center justify-between">
+          <CardContent className="p-3.5 flex items-center justify-between">
             <div>
               <p className="text-xs text-muted-foreground mb-0.5">
                 Current Balance
               </p>
-              <p className="text-2xl font-display font-bold text-primary">
+              <p className="text-xl font-display font-bold text-primary">
                 {formatINR(balance)}
               </p>
             </div>
@@ -317,12 +317,12 @@ export function Deposit() {
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0 }}
-            className="mb-6"
+            className="mb-4"
           >
             {autoApproved ? (
               /* Auto-approved: wallet credited instantly */
               <Card className="border-chart-2/40 bg-chart-2/5 overflow-hidden">
-                <CardContent className="p-6 text-center space-y-4">
+                <CardContent className="p-4 text-center space-y-3">
                   <motion.div
                     className="flex justify-center"
                     initial={{ scale: 0 }}
@@ -334,15 +334,15 @@ export function Deposit() {
                       delay: 0.1,
                     }}
                   >
-                    <div className="p-4 bg-chart-2/15 rounded-full ring-4 ring-chart-2/20">
-                      <CheckCircle2 className="w-10 h-10 text-chart-2" />
+                    <div className="p-3 bg-chart-2/15 rounded-full ring-4 ring-chart-2/20">
+                      <CheckCircle2 className="w-8 h-8 text-chart-2" />
                     </div>
                   </motion.div>
                   <div className="space-y-1">
-                    <h2 className="font-display font-bold text-xl text-foreground">
+                    <h2 className="font-display font-bold text-lg text-foreground">
                       Wallet Credited!
                     </h2>
-                    <p className="text-2xl font-display font-bold text-chart-2">
+                    <p className="text-xl font-display font-bold text-chart-2">
                       {formatINR(depositedAmount)}
                     </p>
                   </div>
@@ -368,13 +368,13 @@ export function Deposit() {
             ) : (
               /* Fallback: pending review */
               <Card className="border-chart-2/30 bg-chart-2/5">
-                <CardContent className="p-6 text-center space-y-3">
+                <CardContent className="p-4 text-center space-y-2.5">
                   <div className="flex justify-center">
-                    <div className="p-3 bg-chart-2/10 rounded-full">
-                      <Clock className="w-7 h-7 text-chart-2" />
+                    <div className="p-2.5 bg-chart-2/10 rounded-full">
+                      <Clock className="w-6 h-6 text-chart-2" />
                     </div>
                   </div>
-                  <h2 className="font-display font-bold text-lg text-foreground">
+                  <h2 className="font-display font-bold text-base text-foreground">
                     Proof Submitted!
                   </h2>
                   <p className="text-sm text-muted-foreground">
@@ -442,13 +442,15 @@ export function Deposit() {
             transition={{ delay: 0.15 }}
           >
             <Card className="border-border/50">
-              <CardHeader>
-                <CardTitle className="font-display text-lg">
+              <CardHeader className="pb-3 pt-4 px-4">
+                <CardTitle className="font-display text-base">
                   Choose Amount
                 </CardTitle>
-                <CardDescription>Minimum deposit: ₹100</CardDescription>
+                <CardDescription className="text-xs">
+                  Minimum deposit: ₹100
+                </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-5">
+              <CardContent className="space-y-4 px-4 pb-4">
                 {/* Quick amounts */}
                 <div>
                   <Label className="text-xs text-muted-foreground mb-2 block">
@@ -829,7 +831,7 @@ export function Deposit() {
                   Email Support
                 </p>
                 <p className="text-sm font-medium text-foreground truncate">
-                  warisbhaimewati@gmail.com
+                  investpro158@gmail.com
                 </p>
               </div>
               <Button
@@ -839,7 +841,7 @@ export function Deposit() {
                 onClick={async () => {
                   try {
                     await navigator.clipboard.writeText(
-                      "warisbhaimewati@gmail.com",
+                      "investpro158@gmail.com",
                     );
                     toast.success("Copied!");
                   } catch {

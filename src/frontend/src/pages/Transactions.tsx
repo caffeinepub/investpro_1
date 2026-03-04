@@ -89,22 +89,22 @@ export function Transactions() {
   };
 
   return (
-    <div className="p-4 lg:p-8 max-w-4xl mx-auto">
+    <div className="p-3 lg:p-5 max-w-4xl mx-auto">
       {/* Header */}
       <motion.div
-        className="mb-8"
+        className="mb-5"
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
       >
-        <div className="flex items-center gap-3 mb-2">
-          <div className="p-2 bg-primary/10 rounded-lg">
-            <History className="w-5 h-5 text-primary" />
+        <div className="flex items-center gap-2.5 mb-1.5">
+          <div className="p-1.5 bg-primary/10 rounded-lg">
+            <History className="w-4 h-4 text-primary" />
           </div>
           <div>
-            <h1 className="font-display text-2xl font-bold text-foreground">
+            <h1 className="font-display text-xl font-bold text-foreground">
               Transaction History
             </h1>
-            <p className="text-muted-foreground text-sm">
+            <p className="text-muted-foreground text-xs">
               Complete record of all your financial activities
             </p>
           </div>
@@ -113,7 +113,7 @@ export function Transactions() {
 
       {/* Summary Cards */}
       <motion.div
-        className="grid grid-cols-3 gap-3 mb-6"
+        className="grid grid-cols-3 gap-2 mb-4"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}

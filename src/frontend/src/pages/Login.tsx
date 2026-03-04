@@ -245,16 +245,16 @@ export function Login() {
           <img
             src="/assets/generated/investpro-logo-transparent.dim_120x120.png"
             alt="InvestPro"
-            className="w-16 h-16 object-contain animate-pulse-gold"
+            className="w-20 h-20 object-contain animate-pulse-gold"
           />
           <div className="flex items-center gap-2 text-chart-2">
-            <CheckCircle2 className="w-5 h-5" />
-            <span className="text-base font-semibold">Device recognised</span>
+            <CheckCircle2 className="w-6 h-6" />
+            <span className="text-lg font-semibold">Device recognised</span>
           </div>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-base text-muted-foreground">
             Logging you in automatically...
           </p>
-          <Loader2 className="w-6 h-6 animate-spin text-primary mt-1" />
+          <Loader2 className="w-7 h-7 animate-spin text-primary mt-1" />
         </motion.div>
       </div>
     );
@@ -277,26 +277,26 @@ export function Login() {
         />
       </div>
 
-      <div className="w-full max-w-4xl grid lg:grid-cols-2 gap-8 items-center relative z-10">
+      <div className="w-full max-w-4xl grid lg:grid-cols-2 gap-6 items-center relative z-10">
         {/* Left: Brand */}
         <motion.div
           initial={{ opacity: 0, x: -30 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.6 }}
-          className="space-y-8"
+          className="space-y-5"
         >
           {/* Logo */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2.5">
             <img
               src="/assets/generated/investpro-logo-transparent.dim_120x120.png"
               alt="InvestPro"
-              className="w-12 h-12 object-contain"
+              className="w-14 h-14 object-contain"
             />
             <div>
               <h1 className="font-display text-3xl font-bold gold-text">
                 InvestPro
               </h1>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-sm text-muted-foreground">
                 Premium Investment Platform
               </p>
             </div>
@@ -307,14 +307,14 @@ export function Login() {
               Grow Your Wealth with{" "}
               <span className="gold-text">Daily Returns</span>
             </h2>
-            <p className="text-muted-foreground mt-3 text-base leading-relaxed">
+            <p className="text-muted-foreground mt-2 text-sm leading-relaxed">
               Invest in tiered plans and earn guaranteed daily ROI. Your
               financial growth, automated and transparent.
             </p>
           </div>
 
           {/* Feature grid */}
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 gap-2">
             {FEATURES.map((f, idx) => {
               const Icon = f.icon;
               return (
@@ -323,18 +323,16 @@ export function Login() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.2 + idx * 0.08 }}
-                  className="flex gap-3 p-3 rounded-lg bg-card border border-border/50"
+                  className="flex gap-2.5 p-3 rounded-lg bg-card border border-border/50"
                 >
                   <div className="p-1.5 bg-primary/10 rounded-md flex-shrink-0 h-fit mt-0.5">
-                    <Icon className="w-3.5 h-3.5 text-primary" />
+                    <Icon className="w-4 h-4 text-primary" />
                   </div>
                   <div>
-                    <p className="text-xs font-semibold text-foreground">
+                    <p className="text-sm font-semibold text-foreground">
                       {f.title}
                     </p>
-                    <p className="text-[11px] text-muted-foreground">
-                      {f.desc}
-                    </p>
+                    <p className="text-xs text-muted-foreground">{f.desc}</p>
                   </div>
                 </motion.div>
               );
@@ -343,26 +341,26 @@ export function Login() {
 
           {/* ROI highlight */}
           <motion.div
-            className="flex items-center gap-4 p-4 rounded-xl bg-primary/5 border border-primary/20"
+            className="flex items-center gap-3 p-3 rounded-xl bg-primary/5 border border-primary/20"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5 }}
           >
-            <div className="text-center px-4 border-r border-primary/20">
+            <div className="text-center px-3 border-r border-primary/20">
               <p className="font-display font-bold text-2xl gold-text">33%</p>
-              <p className="text-[11px] text-muted-foreground">Daily ROI</p>
+              <p className="text-xs text-muted-foreground">Daily ROI</p>
             </div>
-            <div className="text-center px-4 border-r border-primary/20">
+            <div className="text-center px-3 border-r border-primary/20">
               <p className="font-display font-bold text-2xl text-foreground">
                 15
               </p>
-              <p className="text-[11px] text-muted-foreground">Day Terms</p>
+              <p className="text-xs text-muted-foreground">Day Terms</p>
             </div>
-            <div className="text-center px-4">
+            <div className="text-center px-3">
               <p className="font-display font-bold text-2xl text-chart-2">
                 495%
               </p>
-              <p className="text-[11px] text-muted-foreground">Total Return</p>
+              <p className="text-xs text-muted-foreground">Total Return</p>
             </div>
           </motion.div>
         </motion.div>
@@ -383,11 +381,11 @@ export function Login() {
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: -20 }}
                     transition={{ duration: 0.3 }}
-                    className="p-8 space-y-6"
+                    className="p-8 space-y-5"
                   >
                     {/* Header */}
                     <div className="text-center">
-                      <div className="inline-flex p-3 rounded-xl gold-gradient mb-4">
+                      <div className="inline-flex p-3 rounded-xl gold-gradient mb-3">
                         <Phone className="w-6 h-6 text-primary-foreground" />
                       </div>
                       <h3 className="font-display text-2xl font-bold text-foreground">
@@ -428,7 +426,7 @@ export function Login() {
                           onKeyDown={(e) => {
                             if (e.key === "Enter") handleSendOTP();
                           }}
-                          className="flex-1 bg-transparent px-3 py-3 text-sm text-foreground placeholder:text-muted-foreground outline-none"
+                          className="flex-1 bg-transparent px-4 py-4 text-base text-foreground placeholder:text-muted-foreground outline-none"
                           autoComplete="tel"
                         />
                       </div>
@@ -465,7 +463,7 @@ export function Login() {
                       ].map((item) => (
                         <p
                           key={item}
-                          className="text-xs text-muted-foreground flex items-start gap-2"
+                          className="text-sm text-muted-foreground flex items-start gap-2"
                         >
                           <span className="text-base leading-none">
                             {item.slice(0, 2)}
@@ -482,11 +480,11 @@ export function Login() {
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: 20 }}
                     transition={{ duration: 0.3 }}
-                    className="p-8 space-y-6"
+                    className="p-8 space-y-5"
                   >
                     {/* Header */}
                     <div className="text-center">
-                      <div className="inline-flex p-3 rounded-xl gold-gradient mb-4">
+                      <div className="inline-flex p-3 rounded-xl gold-gradient mb-3">
                         <Shield className="w-6 h-6 text-primary-foreground" />
                       </div>
                       <h3 className="font-display text-2xl font-bold text-foreground">
@@ -595,7 +593,7 @@ export function Login() {
                               }
                               onKeyDown={(e) => handleDigitKeyDown(idx, e)}
                               onPaste={idx === 0 ? handleDigitPaste : undefined}
-                              className={`w-11 h-14 text-center text-xl font-bold rounded-lg outline-none transition-all border-2
+                              className={`w-12 h-14 text-center text-xl font-bold rounded-lg outline-none transition-all border-2
                               ${otpDigits[idx] ? "border-primary bg-primary/10 text-foreground" : "border-border bg-input text-foreground"}
                               focus:border-primary focus:ring-2 focus:ring-primary/20
                               ${error ? "border-destructive" : ""}

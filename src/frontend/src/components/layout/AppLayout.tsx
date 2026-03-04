@@ -81,22 +81,22 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
   const SidebarContent = () => (
     <div className="flex flex-col h-full">
       {/* Logo */}
-      <div className="px-6 py-6">
+      <div className="px-4 py-4">
         <Link
           to="/dashboard"
-          className="flex items-center gap-3"
+          className="flex items-center gap-2.5"
           onClick={() => setSidebarOpen(false)}
         >
           <img
             src="/assets/generated/investpro-logo-transparent.dim_120x120.png"
             alt="InvestPro"
-            className="w-9 h-9 object-contain"
+            className="w-7 h-7 object-contain"
           />
           <div>
-            <span className="font-display font-bold text-xl gold-text tracking-tight">
+            <span className="font-display font-bold text-lg gold-text tracking-tight">
               InvestPro
             </span>
-            <p className="text-[10px] text-muted-foreground leading-none mt-0.5">
+            <p className="text-[9px] text-muted-foreground leading-none mt-0.5">
               Premium Investment Platform
             </p>
           </div>
@@ -106,7 +106,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
       <Separator className="bg-sidebar-border" />
 
       {/* Nav */}
-      <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+      <nav className="flex-1 px-2 py-3 space-y-0.5 overflow-y-auto">
         {visibleItems.map((item) => {
           const isActive =
             currentPath === item.href ||
@@ -118,7 +118,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
               to={item.href}
               onClick={() => setSidebarOpen(false)}
               className={`
-                flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 group
+                flex items-center gap-2.5 px-2 py-2 rounded-lg text-xs font-medium transition-all duration-200 group
                 ${
                   isActive
                     ? "bg-primary/10 text-primary border border-primary/20"
@@ -127,7 +127,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
               `}
             >
               <Icon
-                className={`w-4 h-4 flex-shrink-0 transition-colors ${
+                className={`w-3.5 h-3.5 flex-shrink-0 transition-colors ${
                   item.href === "/royal-pass"
                     ? isActive
                       ? "text-amber-400"
@@ -182,24 +182,24 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
       <Separator className="bg-sidebar-border" />
 
       {/* User info + logout */}
-      <div className="px-4 py-4">
-        <div className="flex items-center gap-3">
-          <Avatar className="h-8 w-8 border border-primary/30">
-            <AvatarFallback className="bg-primary/10 text-primary text-xs font-bold">
+      <div className="px-3 py-3">
+        <div className="flex items-center gap-2.5">
+          <Avatar className="h-7 w-7 border border-primary/30">
+            <AvatarFallback className="bg-primary/10 text-primary text-[10px] font-bold">
               {initials}
             </AvatarFallback>
           </Avatar>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-sidebar-foreground truncate">
+            <p className="text-xs font-medium text-sidebar-foreground truncate">
               {profile?.name || "Investor"}
             </p>
             {displayUserId && (
-              <p className="text-[10px] text-muted-foreground/70 font-mono tracking-wider mt-0.5">
+              <p className="text-[9px] text-muted-foreground/70 font-mono tracking-wider mt-0.5">
                 {displayUserId}
               </p>
             )}
             {isAdmin && (
-              <Badge className="text-[9px] h-4 px-1.5 gold-gradient text-primary-foreground border-0 font-bold mt-0.5">
+              <Badge className="text-[9px] h-3.5 px-1 gold-gradient text-primary-foreground border-0 font-bold mt-0.5">
                 ADMIN
               </Badge>
             )}
@@ -250,30 +250,30 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
       {/* Main content */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         {/* Mobile topbar */}
-        <header className="lg:hidden flex items-center justify-between px-4 py-3 bg-sidebar border-b border-sidebar-border">
+        <header className="lg:hidden flex items-center justify-between px-3 py-2 bg-sidebar border-b border-sidebar-border">
           <Link to="/dashboard" className="flex items-center gap-2">
             <img
               src="/assets/generated/investpro-logo-transparent.dim_120x120.png"
               alt="InvestPro"
-              className="w-7 h-7 object-contain"
+              className="w-6 h-6 object-contain"
             />
-            <span className="font-display font-bold text-lg gold-text">
+            <span className="font-display font-bold text-base gold-text">
               InvestPro
             </span>
           </Link>
-          <div className="flex items-center gap-2">
-            <Avatar className="h-7 w-7 border border-primary/30">
-              <AvatarFallback className="bg-primary/10 text-primary text-xs font-bold">
+          <div className="flex items-center gap-1.5">
+            <Avatar className="h-6 w-6 border border-primary/30">
+              <AvatarFallback className="bg-primary/10 text-primary text-[9px] font-bold">
                 {initials}
               </AvatarFallback>
             </Avatar>
             <button
               type="button"
               onClick={() => setSidebarOpen(true)}
-              className="p-2 rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary"
+              className="p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary"
               aria-label="More menu"
             >
-              <MoreHorizontal className="w-5 h-5" />
+              <MoreHorizontal className="w-4 h-4" />
             </button>
           </div>
         </header>
@@ -298,13 +298,13 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                 <Link
                   key={item.href}
                   to={item.href}
-                  className="flex-1 flex flex-col items-center justify-center gap-0.5 py-2 relative transition-colors"
+                  className="flex-1 flex flex-col items-center justify-center gap-0.5 py-1.5 relative transition-colors"
                 >
                   {/* Active indicator pill */}
                   {isActive && (
                     <motion.span
                       layoutId="bottom-nav-indicator"
-                      className="absolute top-0 left-1/2 -translate-x-1/2 w-8 h-0.5 rounded-full gold-gradient"
+                      className="absolute top-0 left-1/2 -translate-x-1/2 w-6 h-0.5 rounded-full gold-gradient"
                       transition={{
                         type: "spring",
                         stiffness: 400,
@@ -313,12 +313,12 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                     />
                   )}
                   <Icon
-                    className={`w-5 h-5 transition-colors ${
+                    className={`w-4 h-4 transition-colors ${
                       isActive ? "text-primary" : "text-muted-foreground"
                     }`}
                   />
                   <span
-                    className={`text-[10px] font-medium transition-colors ${
+                    className={`text-[9px] font-medium transition-colors ${
                       isActive ? "text-primary" : "text-muted-foreground"
                     }`}
                   >

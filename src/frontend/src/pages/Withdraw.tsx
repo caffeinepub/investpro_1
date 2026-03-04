@@ -10,7 +10,7 @@ import {
   useUserProfile,
 } from "@/hooks/useQueries";
 import { useUserId } from "@/hooks/useUserId";
-import { notifyWhatsApp } from "@/lib/whatsappNotify";
+import { notifyWithdrawWhatsApp } from "@/lib/whatsappNotify";
 import {
   formatINR,
   getWithdrawalBlockedMessage,
@@ -91,8 +91,8 @@ export function Withdraw() {
     try {
       await withdrawMutation.mutateAsync(parsedAmount);
 
-      // Silent background notification to admin — no WhatsApp window opened
-      notifyWhatsApp(
+      // Withdrawal notification to admin WhatsApp (9671870287)
+      notifyWithdrawWhatsApp(
         `NEW WITHDRAWAL REQUEST\nUser: ${profile?.name ?? "User"}\nAmount: ₹${parsedAmount}\nAccount: ${userData?.bankProfile.accountNumber ?? "N/A"}\nIFSC: ${userData?.bankProfile.ifscCode ?? "N/A"}\nHolder: ${userData?.bankProfile.holderName ?? "N/A"}\nPlease process within 24 hours.`,
       );
 
@@ -106,22 +106,22 @@ export function Withdraw() {
   }
 
   return (
-    <div className="p-4 lg:p-8 max-w-2xl mx-auto">
+    <div className="p-3 lg:p-5 max-w-2xl mx-auto">
       {/* Header */}
       <motion.div
-        className="mb-8"
+        className="mb-5"
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
       >
-        <div className="flex items-center gap-3 mb-2">
-          <div className="p-2 bg-chart-5/10 rounded-lg">
-            <ArrowUpCircle className="w-5 h-5 text-chart-5" />
+        <div className="flex items-center gap-2.5 mb-1.5">
+          <div className="p-1.5 bg-chart-5/10 rounded-lg">
+            <ArrowUpCircle className="w-4 h-4 text-chart-5" />
           </div>
           <div>
-            <h1 className="font-display text-2xl font-bold text-foreground">
+            <h1 className="font-display text-xl font-bold text-foreground">
               Withdraw Funds
             </h1>
-            <p className="text-muted-foreground text-sm">
+            <p className="text-muted-foreground text-xs">
               Transfer funds to your bank account
             </p>
           </div>
@@ -131,13 +131,13 @@ export function Withdraw() {
       {/* Sunday / Monday block banner */}
       {!withdrawalAllowed && (
         <motion.div
-          className="mb-6"
+          className="mb-4"
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.05 }}
         >
           <Card className="border-destructive/40 bg-destructive/8">
-            <CardContent className="p-5 flex items-start gap-4">
+            <CardContent className="p-3.5 flex items-start gap-3">
               <div className="p-2 bg-destructive/15 rounded-lg flex-shrink-0">
                 <CalendarX className="w-5 h-5 text-destructive" />
               </div>
@@ -179,7 +179,7 @@ export function Withdraw() {
 
       {/* Balance */}
       <motion.div
-        className="mb-6"
+        className="mb-4"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
@@ -190,7 +190,7 @@ export function Withdraw() {
               <p className="text-xs text-muted-foreground mb-0.5">
                 Available Balance
               </p>
-              <p className="text-2xl font-display font-bold text-primary">
+              <p className="text-xl font-display font-bold text-primary">
                 {formatINR(balance)}
               </p>
             </div>
@@ -212,13 +212,13 @@ export function Withdraw() {
       {/* Bank not linked warning */}
       {!bankLinked && (
         <motion.div
-          className="mb-6"
+          className="mb-4"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.15 }}
         >
           <Card className="border-warning/30 bg-warning/5">
-            <CardContent className="p-4 flex items-start gap-3">
+            <CardContent className="p-3.5 flex items-start gap-3">
               <AlertTriangle className="w-5 h-5 text-warning flex-shrink-0 mt-0.5" />
               <div>
                 <p className="text-sm font-medium text-warning mb-1">
@@ -248,13 +248,13 @@ export function Withdraw() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
-        className="mb-8"
+        className="mb-5"
       >
         <Card
           className={`border-border/50 ${!bankLinked || !withdrawalAllowed ? "opacity-60" : ""}`}
         >
-          <CardHeader>
-            <CardTitle className="font-display text-lg">
+          <CardHeader className="pb-3 pt-4 px-4">
+            <CardTitle className="font-display text-base">
               Request Withdrawal
             </CardTitle>
           </CardHeader>
@@ -350,13 +350,13 @@ export function Withdraw() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3 }}
       >
-        <h2 className="font-display font-semibold text-lg mb-4 text-foreground">
+        <h2 className="font-display font-semibold text-base mb-3 text-foreground">
           Withdrawal Requests
         </h2>
 
         {withdrawals.length === 0 ? (
           <Card className="border-border/50 border-dashed">
-            <CardContent className="p-8 text-center">
+            <CardContent className="p-5 text-center">
               <p className="text-muted-foreground text-sm">
                 No withdrawal requests yet
               </p>

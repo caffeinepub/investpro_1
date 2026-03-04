@@ -83,7 +83,7 @@ function DisclaimerModal({ onAccept }: { onAccept: () => void }) {
         initial={{ opacity: 0, scale: 0.92, y: 20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         transition={{ type: "spring", stiffness: 260, damping: 22 }}
-        className="w-full max-w-md rounded-2xl overflow-hidden shadow-2xl"
+        className="w-full max-w-sm rounded-2xl overflow-hidden shadow-2xl"
         style={{
           background:
             "linear-gradient(160deg, oklch(0.1 0.03 285), oklch(0.08 0.02 75))",
@@ -100,50 +100,50 @@ function DisclaimerModal({ onAccept }: { onAccept: () => void }) {
           }}
         />
 
-        <div className="p-6 space-y-5">
+        <div className="p-4 space-y-3.5">
           {/* Header */}
-          <div className="text-center space-y-1.5">
+          <div className="text-center space-y-1">
             <div
-              className="inline-flex p-3 rounded-2xl mb-1"
+              className="inline-flex p-2.5 rounded-2xl mb-1"
               style={{
                 background: "oklch(0.78 0.16 75 / 0.12)",
                 border: "1px solid oklch(0.78 0.16 75 / 0.25)",
               }}
             >
               <Crown
-                className="w-7 h-7"
+                className="w-6 h-6"
                 style={{ color: "oklch(0.85 0.22 82)" }}
               />
             </div>
             <h2
-              className="font-display text-xl font-bold"
+              className="font-display text-lg font-bold"
               style={{ color: "oklch(0.88 0.18 80)" }}
             >
               Welcome to InvestPro
             </h2>
-            <p className="text-sm text-muted-foreground leading-relaxed">
+            <p className="text-xs text-muted-foreground leading-relaxed">
               Before you begin investing, please read these important guidelines
               to protect your funds and get the best experience.
             </p>
           </div>
 
           {/* Points */}
-          <div className="space-y-3">
+          <div className="space-y-2">
             {points.map((pt) => {
               const Icon = pt.icon;
               return (
                 <div
                   key={pt.title}
-                  className={`flex gap-3 p-3 rounded-xl border ${pt.bg}`}
+                  className={`flex gap-2.5 p-2.5 rounded-xl border ${pt.bg}`}
                 >
                   <div className="flex-shrink-0 mt-0.5">
-                    <Icon className={`w-4 h-4 ${pt.color}`} />
+                    <Icon className={`w-3.5 h-3.5 ${pt.color}`} />
                   </div>
                   <div>
-                    <p className={`text-sm font-semibold ${pt.color}`}>
+                    <p className={`text-xs font-semibold ${pt.color}`}>
                       {pt.title}
                     </p>
-                    <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
+                    <p className="text-[11px] text-muted-foreground mt-0.5 leading-relaxed">
                       {pt.desc}
                     </p>
                   </div>
@@ -153,16 +153,16 @@ function DisclaimerModal({ onAccept }: { onAccept: () => void }) {
           </div>
 
           {/* Checkbox */}
-          <label className="flex items-start gap-3 cursor-pointer group">
+          <label className="flex items-start gap-2.5 cursor-pointer group">
             <div className="flex-shrink-0 mt-0.5">
               <input
                 type="checkbox"
                 checked={checked}
                 onChange={(e) => setChecked(e.target.checked)}
-                className="w-4 h-4 rounded accent-amber-500 cursor-pointer"
+                className="w-3.5 h-3.5 rounded accent-amber-500 cursor-pointer"
               />
             </div>
-            <p className="text-xs text-muted-foreground group-hover:text-foreground transition-colors leading-relaxed">
+            <p className="text-[11px] text-muted-foreground group-hover:text-foreground transition-colors leading-relaxed">
               I have read and understood all the guidelines above. I will keep
               the app installed and stay logged in to protect my investments.
             </p>
@@ -172,7 +172,7 @@ function DisclaimerModal({ onAccept }: { onAccept: () => void }) {
           <Button
             onClick={onAccept}
             disabled={!checked}
-            className="w-full h-12 font-bold text-base border-0 disabled:opacity-40"
+            className="w-full h-9 font-bold text-sm border-0 disabled:opacity-40"
             style={{
               background: checked
                 ? "linear-gradient(135deg, oklch(0.6 0.18 75), oklch(0.78 0.22 82))"

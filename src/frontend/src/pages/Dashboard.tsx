@@ -368,7 +368,7 @@ export function Dashboard() {
 
   return (
     <div
-      className="p-4 lg:p-8 max-w-7xl mx-auto relative"
+      className="p-3 lg:p-5 max-w-7xl mx-auto relative"
       style={{
         boxShadow: hasRoyalPass
           ? "0 0 40px oklch(0.78 0.16 75 / 0.15)"
@@ -435,14 +435,14 @@ export function Dashboard() {
 
       {/* Header */}
       <motion.div
-        className="mb-8 relative"
+        className="mb-5 relative"
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <div className="flex items-center gap-2 mb-1">
-          <Sparkles className="w-4 h-4 text-primary" />
-          <span className="text-sm text-muted-foreground font-medium">
+        <div className="flex items-center gap-1.5 mb-1">
+          <Sparkles className="w-3.5 h-3.5 text-primary" />
+          <span className="text-xs text-muted-foreground font-medium">
             {new Date().toLocaleDateString("en-IN", {
               weekday: "long",
               year: "numeric",
@@ -452,7 +452,7 @@ export function Dashboard() {
           </span>
         </div>
         <div className="flex flex-wrap items-center gap-3 mb-1">
-          <h1 className="font-display text-3xl font-bold text-foreground">
+          <h1 className="font-display text-2xl font-bold text-foreground">
             Welcome back,{" "}
             <span className="gold-text">
               {profile?.name?.split(" ")[0] ?? "Investor"}
@@ -523,7 +523,7 @@ export function Dashboard() {
 
       {/* Royal Pass Banner */}
       <motion.div
-        className="mb-6"
+        className="mb-4"
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.18 }}
@@ -632,7 +632,7 @@ export function Dashboard() {
 
       {/* Stat Cards */}
       <motion.div
-        className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8"
+        className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-5"
         variants={stagger}
         initial="initial"
         animate="animate"
@@ -642,24 +642,24 @@ export function Dashboard() {
           return (
             <motion.div key={stat.label} variants={fadeUp}>
               <Card className="relative overflow-hidden border-border/50 stat-card-shine bg-card shadow-card hover:border-primary/30 transition-colors duration-300">
-                <CardContent className="p-6">
-                  <div className="flex items-start justify-between mb-4">
-                    <div className={`p-2.5 rounded-lg ${stat.bg}`}>
-                      <Icon className={`w-5 h-5 ${stat.color}`} />
+                <CardContent className="p-4">
+                  <div className="flex items-start justify-between mb-2.5">
+                    <div className={`p-2 rounded-lg ${stat.bg}`}>
+                      <Icon className={`w-4 h-4 ${stat.color}`} />
                     </div>
                   </div>
                   {isLoading ? (
-                    <Skeleton className="h-8 w-28 mb-1" />
+                    <Skeleton className="h-7 w-24 mb-1" />
                   ) : (
-                    <p className="text-2xl font-display font-bold text-foreground">
+                    <p className="text-xl font-display font-bold text-foreground">
                       {stat.value}
                     </p>
                   )}
-                  <p className="text-sm text-muted-foreground mt-1">
+                  <p className="text-xs text-muted-foreground mt-1">
                     {stat.label}
                   </p>
                   {stat.change && (
-                    <p className="text-xs text-muted-foreground/70 mt-1.5">
+                    <p className="text-[11px] text-muted-foreground/70 mt-1">
                       {stat.change}
                     </p>
                   )}
@@ -672,42 +672,42 @@ export function Dashboard() {
 
       {/* Quick Actions */}
       <motion.div
-        className="mb-8"
+        className="mb-5"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.25, duration: 0.4 }}
       >
-        <h2 className="font-display font-semibold text-lg mb-4 text-foreground">
+        <h2 className="font-display font-semibold text-base mb-3 text-foreground">
           Quick Actions
         </h2>
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-3 gap-2">
           <Link to="/deposit">
             <Card className="border-border/50 hover:border-primary/40 hover:bg-primary/5 transition-all duration-200 cursor-pointer group">
-              <CardContent className="p-4 text-center">
-                <div className="p-2 bg-primary/10 rounded-lg w-fit mx-auto mb-2 group-hover:bg-primary/20 transition-colors">
-                  <ArrowDownCircle className="w-5 h-5 text-primary" />
+              <CardContent className="p-3 text-center">
+                <div className="p-1.5 bg-primary/10 rounded-lg w-fit mx-auto mb-1.5 group-hover:bg-primary/20 transition-colors">
+                  <ArrowDownCircle className="w-4 h-4 text-primary" />
                 </div>
-                <p className="text-sm font-medium text-foreground">Deposit</p>
+                <p className="text-xs font-medium text-foreground">Deposit</p>
               </CardContent>
             </Card>
           </Link>
           <Link to="/withdraw">
             <Card className="border-border/50 hover:border-chart-5/40 hover:bg-chart-5/5 transition-all duration-200 cursor-pointer group">
-              <CardContent className="p-4 text-center">
-                <div className="p-2 bg-chart-5/10 rounded-lg w-fit mx-auto mb-2 group-hover:bg-chart-5/20 transition-colors">
-                  <ArrowUpCircle className="w-5 h-5 text-chart-5" />
+              <CardContent className="p-3 text-center">
+                <div className="p-1.5 bg-chart-5/10 rounded-lg w-fit mx-auto mb-1.5 group-hover:bg-chart-5/20 transition-colors">
+                  <ArrowUpCircle className="w-4 h-4 text-chart-5" />
                 </div>
-                <p className="text-sm font-medium text-foreground">Withdraw</p>
+                <p className="text-xs font-medium text-foreground">Withdraw</p>
               </CardContent>
             </Card>
           </Link>
           <Link to="/plans">
             <Card className="border-border/50 hover:border-chart-2/40 hover:bg-chart-2/5 transition-all duration-200 cursor-pointer group">
-              <CardContent className="p-4 text-center">
-                <div className="p-2 bg-chart-2/10 rounded-lg w-fit mx-auto mb-2 group-hover:bg-chart-2/20 transition-colors">
-                  <TrendingUp className="w-5 h-5 text-chart-2" />
+              <CardContent className="p-3 text-center">
+                <div className="p-1.5 bg-chart-2/10 rounded-lg w-fit mx-auto mb-1.5 group-hover:bg-chart-2/20 transition-colors">
+                  <TrendingUp className="w-4 h-4 text-chart-2" />
                 </div>
-                <p className="text-sm font-medium text-foreground">Invest</p>
+                <p className="text-xs font-medium text-foreground">Invest</p>
               </CardContent>
             </Card>
           </Link>
@@ -720,8 +720,8 @@ export function Dashboard() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.35, duration: 0.4 }}
       >
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="font-display font-semibold text-lg text-foreground">
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="font-display font-semibold text-base text-foreground">
             Active Investments
           </h2>
           <Link to="/plans">
@@ -753,14 +753,14 @@ export function Dashboard() {
           </div>
         ) : activeInvestments.length === 0 ? (
           <Card className="border-border/50 border-dashed">
-            <CardContent className="p-8 text-center">
-              <div className="p-3 bg-primary/10 rounded-full w-fit mx-auto mb-3">
-                <TrendingUp className="w-6 h-6 text-primary" />
+            <CardContent className="p-5 text-center">
+              <div className="p-2.5 bg-primary/10 rounded-full w-fit mx-auto mb-2.5">
+                <TrendingUp className="w-5 h-5 text-primary" />
               </div>
-              <p className="font-medium text-foreground mb-1">
+              <p className="font-medium text-foreground mb-1 text-sm">
                 No active investments
               </p>
-              <p className="text-sm text-muted-foreground mb-4">
+              <p className="text-xs text-muted-foreground mb-3">
                 Start earning daily returns by investing in one of our plans.
               </p>
               <Link to="/plans">
@@ -788,11 +788,11 @@ export function Dashboard() {
                   animate={{ opacity: 1, scale: 1 }}
                 >
                   <Card className="border-border/50 hover:border-primary/30 transition-colors duration-200 overflow-hidden">
-                    <CardContent className="p-5">
-                      <div className="flex items-start justify-between mb-3">
+                    <CardContent className="p-3.5">
+                      <div className="flex items-start justify-between mb-2.5">
                         <div>
                           <div className="flex items-center gap-2">
-                            <span className="font-display font-bold text-base text-foreground">
+                            <span className="font-display font-bold text-sm text-foreground">
                               {inv.planName} Plan
                             </span>
                             <Badge
@@ -871,27 +871,27 @@ export function Dashboard() {
       {/* Royal Pass Perks (only when active) */}
       {hasRoyalPass && (
         <motion.div
-          className="mt-8"
+          className="mt-5"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5, duration: 0.4 }}
         >
-          <div className="flex items-center gap-3 mb-4">
+          <div className="flex items-center gap-2.5 mb-3">
             <Crown
-              className="w-4 h-4"
+              className="w-3.5 h-3.5"
               style={{ color: "oklch(0.85 0.2 78)" }}
             />
             <h2
-              className="font-display font-semibold text-lg"
+              className="font-display font-semibold text-base"
               style={{ color: "oklch(0.85 0.2 78)" }}
             >
               Royal Pass Perks
             </h2>
           </div>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 gap-2">
             {/* Priority Support */}
             <a
-              href="https://wa.me/919813983483"
+              href="https://wa.me/919671870287"
               target="_blank"
               rel="noopener noreferrer"
               data-ocid="dashboard.royal-pass.button"
@@ -904,23 +904,23 @@ export function Dashboard() {
                   borderColor: "oklch(0.78 0.16 75 / 0.25)",
                 }}
               >
-                <CardContent className="p-4 text-center">
+                <CardContent className="p-3 text-center">
                   <div
-                    className="p-2 rounded-lg w-fit mx-auto mb-2"
+                    className="p-1.5 rounded-lg w-fit mx-auto mb-1.5"
                     style={{
                       background: "oklch(0.78 0.16 75 / 0.12)",
                       border: "1px solid oklch(0.78 0.16 75 / 0.2)",
                     }}
                   >
                     <MessageCircle
-                      className="w-5 h-5"
+                      className="w-4 h-4"
                       style={{ color: "oklch(0.78 0.16 75)" }}
                     />
                   </div>
-                  <p className="text-sm font-medium text-foreground">
+                  <p className="text-xs font-medium text-foreground">
                     Priority Support
                   </p>
-                  <p className="text-xs text-muted-foreground mt-0.5">
+                  <p className="text-[11px] text-muted-foreground mt-0.5">
                     VIP WhatsApp line
                   </p>
                 </CardContent>
@@ -939,23 +939,23 @@ export function Dashboard() {
                   borderColor: "oklch(0.78 0.16 75 / 0.25)",
                 }}
               >
-                <CardContent className="p-4 text-center">
+                <CardContent className="p-3 text-center">
                   <div
-                    className="p-2 rounded-lg w-fit mx-auto mb-2"
+                    className="p-1.5 rounded-lg w-fit mx-auto mb-1.5"
                     style={{
                       background: "oklch(0.78 0.16 75 / 0.12)",
                       border: "1px solid oklch(0.78 0.16 75 / 0.2)",
                     }}
                   >
                     <Zap
-                      className="w-5 h-5"
+                      className="w-4 h-4"
                       style={{ color: "oklch(0.85 0.2 78)" }}
                     />
                   </div>
-                  <p className="text-sm font-medium text-foreground">
+                  <p className="text-xs font-medium text-foreground">
                     Fast Withdraw
                   </p>
-                  <p className="text-xs text-muted-foreground mt-0.5">
+                  <p className="text-[11px] text-muted-foreground mt-0.5">
                     1-hour processing
                   </p>
                 </CardContent>

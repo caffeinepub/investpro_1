@@ -3,9 +3,9 @@
 
 export interface PlatformSettings {
   maxWithdrawal: number; // default 11000
-  adminWhatsApp: string; // default "9813983483"
-  supportEmail: string; // default "warisbhaimewati@gmail.com"
-  supportWhatsApp: string; // default "9813983483"
+  adminWhatsApp: string; // default "9518089878"
+  supportEmail: string; // default "investpro158@gmail.com"
+  supportWhatsApp: string; // default "9671870287"
   upiId: string; // default "9813983483-2.wallet@phonepe"
   bankAccount: string; // default "7871001700092453"
   bankIfsc: string; // default "PUNB0787100"
@@ -32,9 +32,9 @@ const PLAN_OVERRIDES_KEY = "__investpro_plan_overrides__";
 
 const DEFAULT_SETTINGS: PlatformSettings = {
   maxWithdrawal: 11000,
-  adminWhatsApp: "9813983483",
-  supportEmail: "warisbhaimewati@gmail.com",
-  supportWhatsApp: "9813983483",
+  adminWhatsApp: "9518089878",
+  supportEmail: "investpro158@gmail.com",
+  supportWhatsApp: "9671870287",
   upiId: "9813983483-2.wallet@phonepe",
   bankAccount: "7871001700092453",
   bankIfsc: "PUNB0787100",

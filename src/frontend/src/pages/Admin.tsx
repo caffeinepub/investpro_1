@@ -260,7 +260,7 @@ function OverviewTab({ onTabChange }: { onTabChange: (tab: string) => void }) {
         )}
       </AnimatePresence>
 
-      <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+      <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 mb-4">
         {statCards.map((stat, idx) => {
           const Icon = stat.icon;
           return (
@@ -273,11 +273,11 @@ function OverviewTab({ onTabChange }: { onTabChange: (tab: string) => void }) {
               <Card
                 className={`border-border/50 relative overflow-hidden stat-card-shine ${stat.isWarning ? "border-warning/20" : ""}`}
               >
-                <CardContent className="p-5">
-                  <div className={`p-2 ${stat.bg} rounded-lg w-fit mb-3`}>
-                    <Icon className={`w-4 h-4 ${stat.color}`} />
+                <CardContent className="p-3.5">
+                  <div className={`p-1.5 ${stat.bg} rounded-lg w-fit mb-2`}>
+                    <Icon className={`w-3.5 h-3.5 ${stat.color}`} />
                   </div>
-                  <p className={`font-display font-bold text-xl ${stat.color}`}>
+                  <p className={`font-display font-bold text-lg ${stat.color}`}>
                     {stat.value}
                   </p>
                   <p className="text-xs text-muted-foreground mt-1">
@@ -1481,9 +1481,9 @@ function PlansTab() {
 
 const DEFAULT_SETTINGS = {
   maxWithdrawal: 11000,
-  adminWhatsApp: "9813983483",
-  supportEmail: "warisbhaimewati@gmail.com",
-  supportWhatsApp: "9813983483",
+  adminWhatsApp: "9518089878",
+  supportEmail: "investpro158@gmail.com",
+  supportWhatsApp: "9671870287",
   upiId: "9813983483-2.wallet@phonepe",
   bankAccount: "7871001700092453",
   bankIfsc: "PUNB0787100",
@@ -1525,19 +1525,19 @@ function SettingsTab() {
       key: "adminWhatsApp",
       label: "Admin WhatsApp Number",
       type: "text",
-      placeholder: "9813983483",
+      placeholder: "9518089878",
     },
     {
       key: "supportEmail",
       label: "Support Email",
       type: "email",
-      placeholder: "warisbhaimewati@gmail.com",
+      placeholder: "investpro158@gmail.com",
     },
     {
       key: "supportWhatsApp",
       label: "Support WhatsApp",
       type: "text",
-      placeholder: "9813983483",
+      placeholder: "9671870287",
     },
     {
       key: "upiId",
@@ -1794,35 +1794,35 @@ export function Admin() {
   const pendingDeposits = deposits.filter((d) => d.status === "Pending");
 
   return (
-    <div className="p-4 lg:p-8 max-w-7xl mx-auto">
+    <div className="p-3 lg:p-5 max-w-7xl mx-auto">
       {/* Header */}
       <motion.div
-        className="mb-8"
+        className="mb-5"
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
       >
-        <div className="flex items-center gap-3 mb-2 flex-wrap">
-          <div className="p-2.5 emerald-gradient rounded-xl shadow-lg">
-            <Shield className="w-5 h-5 text-primary-foreground" />
+        <div className="flex items-center gap-2.5 mb-1.5 flex-wrap">
+          <div className="p-2 emerald-gradient rounded-xl shadow-lg">
+            <Shield className="w-4 h-4 text-primary-foreground" />
           </div>
           <div>
-            <h1 className="font-display text-2xl font-bold text-foreground">
+            <h1 className="font-display text-xl font-bold text-foreground">
               Super Admin Panel
             </h1>
-            <p className="text-muted-foreground text-sm">
+            <p className="text-muted-foreground text-xs">
               Complete platform control — users, transactions, plans &amp;
               settings
             </p>
           </div>
-          <Badge className="emerald-gradient text-primary-foreground border-0 ml-auto text-xs px-2.5">
+          <Badge className="emerald-gradient text-primary-foreground border-0 ml-auto text-xs px-2">
             SUPER ADMIN
           </Badge>
         </div>
       </motion.div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <div className="overflow-x-auto pb-1 mb-6">
+        <div className="overflow-x-auto pb-1 mb-4">
           <TabsList className="bg-secondary/50 border border-border/40 h-10 flex gap-0.5 w-max min-w-full">
             <TabsTrigger
               value="overview"

@@ -1617,10 +1617,10 @@ export function Plans() {
   const currentSection = SECTIONS.find((s) => s.id === activeSection)!;
 
   return (
-    <div className="p-4 lg:p-8 max-w-7xl mx-auto">
+    <div className="p-3 lg:p-5 max-w-7xl mx-auto">
       {/* ── Editorial Header ── */}
       <motion.div
-        className="mb-10 relative"
+        className="mb-6 relative"
         initial={{ opacity: 0, y: -16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
@@ -1650,7 +1650,7 @@ export function Plans() {
           <div>
             <h1
               className="font-display font-black leading-[0.9] tracking-[-0.03em]"
-              style={{ fontSize: "clamp(2.4rem, 7vw, 5rem)" }}
+              style={{ fontSize: "clamp(1.8rem, 5vw, 3.5rem)" }}
             >
               <span
                 className="block"
