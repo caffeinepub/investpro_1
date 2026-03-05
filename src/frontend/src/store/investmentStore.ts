@@ -926,19 +926,27 @@ export function getReferralStats(
 
 /**
  * Returns true if withdrawals are allowed today.
- * Withdrawals are BLOCKED on Sunday (0) and Monday (1).
+ * Withdrawals are ONLY allowed on Sunday (0) and Monday (1).
+ * Tuesday (2) through Saturday (6) are BLOCKED.
  */
 export function isWithdrawalAllowedToday(): boolean {
   const day = new Date().getDay(); // 0=Sun, 1=Mon, ..., 6=Sat
-  return day !== 0 && day !== 1;
+  return day === 0 || day === 1;
 }
 
 export function getWithdrawalBlockedMessage(): string {
+  const dayNames = [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+  ];
   const day = new Date().getDay();
-  if (day === 0)
-    return "Withdrawals are closed on Sundays. Please try again from Tuesday.";
-  if (day === 1)
-    return "Withdrawals are closed on Mondays. Please try again from Tuesday.";
+  if (day >= 2 && day <= 6)
+    return `Withdrawals are only available on Sundays and Mondays. Today is ${dayNames[day]} — please come back on Sunday or Monday to withdraw.`;
   return "";
 }
 

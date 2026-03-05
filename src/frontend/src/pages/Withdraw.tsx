@@ -143,7 +143,7 @@ export function Withdraw() {
               </div>
               <div>
                 <p className="text-sm font-semibold text-destructive mb-1">
-                  Withdrawals Unavailable Today
+                  Withdrawals Closed Today
                 </p>
                 <p className="text-xs text-muted-foreground leading-relaxed">
                   {blockedMessage}
@@ -152,7 +152,7 @@ export function Withdraw() {
                   {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map(
                     (d, i) => {
                       const today = new Date().getDay();
-                      const isBlocked = i === 0 || i === 1;
+                      const isOpen = i === 0 || i === 1; // Sun & Mon are open
                       const isToday = i === today;
                       return (
                         <span
@@ -160,9 +160,9 @@ export function Withdraw() {
                           className={`text-[10px] font-medium px-2 py-0.5 rounded-full border ${
                             isToday
                               ? "bg-destructive/20 border-destructive/40 text-destructive"
-                              : isBlocked
-                                ? "bg-muted/60 border-border/50 text-muted-foreground line-through"
-                                : "bg-chart-2/10 border-chart-2/30 text-chart-2"
+                              : isOpen
+                                ? "bg-chart-2/10 border-chart-2/30 text-chart-2"
+                                : "bg-muted/60 border-border/50 text-muted-foreground line-through"
                           }`}
                         >
                           {d}
