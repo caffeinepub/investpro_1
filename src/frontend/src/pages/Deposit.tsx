@@ -10,7 +10,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
-  useDeposit,
   useSubmitDeposit,
   useUserData,
   useUserProfile,
@@ -25,27 +24,16 @@ import {
   CheckCircle2,
   Clock,
   Copy,
-  CreditCard,
   Crown,
   ImagePlus,
   Loader2,
   Mail,
   QrCode,
   Send,
-  Zap,
 } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-
-const RAZORPAY_KEY = "rzp_test_SMErEZi6HYvAmP";
-
-declare global {
-  interface Window {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    Razorpay: any;
-  }
-}
 
 const QUICK_AMOUNTS = [1000, 1999, 5000, 10000, 25000];
 
@@ -94,8 +82,6 @@ export function Deposit() {
     (userProfile as { name?: string } | null)?.name ?? userId ?? "User";
   const submitMutation = useSubmitDeposit(userId, userName);
 
-  const depositMutation = useDeposit(userId);
-
   // Detect royal pass purchase mode from URL
   const urlParams = new URLSearchParams(window.location.search);
   const isRoyalPass = urlParams.get("royal") === "true";
@@ -107,7 +93,6 @@ export function Deposit() {
   const [submitted, setSubmitted] = useState(false);
   const [autoApproved, setAutoApproved] = useState(false);
   const [depositedAmount, setDepositedAmount] = useState(0);
-  const [razorpayLoading, setRazorpayLoading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Auto-set amount to 1999 when purchasing royal pass
@@ -186,73 +171,6 @@ export function Deposit() {
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Submission failed");
     }
-  }
-
-  function handleRazorpayPayment() {
-    if (!isValidAmount) {
-      toast.error("Please enter a valid amount (minimum ₹100)");
-      return;
-    }
-    if (!window.Razorpay) {
-      toast.error("Razorpay failed to load. Please refresh and try again.");
-      return;
-    }
-
-    setRazorpayLoading(true);
-
-    const options = {
-      key: RAZORPAY_KEY,
-      amount: parsedAmount * 100, // paise
-      currency: "INR",
-      name: "InvestPro",
-      description: "Wallet Deposit",
-      image: "/assets/generated/investpro-icon-192.dim_192x192.png",
-      prefill: {
-        name: userName,
-      },
-      theme: {
-        color: "#d4af37",
-      },
-      handler: async (response: { razorpay_payment_id: string }) => {
-        // Payment successful — auto-credit wallet
-        try {
-          await depositMutation.mutateAsync({
-            amount: parsedAmount,
-            description: `Razorpay payment ${response.razorpay_payment_id}`,
-          });
-          setDepositedAmount(parsedAmount);
-          setAutoApproved(true);
-          setSubmitted(true);
-          if (isRoyalPass && userId) {
-            setRoyalPassActive(userId);
-          }
-          notifyWhatsApp(
-            `RAZORPAY DEPOSIT\nUser: ${userName}\nAmount: ₹${parsedAmount}\nPayment ID: ${response.razorpay_payment_id}\nWallet credited automatically.`,
-          );
-          toast.success(
-            `₹${parsedAmount.toLocaleString("en-IN")} added to your wallet!`,
-          );
-        } catch (err) {
-          toast.error(
-            err instanceof Error ? err.message : "Failed to credit wallet",
-          );
-        } finally {
-          setRazorpayLoading(false);
-        }
-      },
-      modal: {
-        ondismiss: () => {
-          setRazorpayLoading(false);
-        },
-      },
-    };
-
-    const rzp = new window.Razorpay(options);
-    rzp.on("payment.failed", () => {
-      toast.error("Payment failed. Please try again.");
-      setRazorpayLoading(false);
-    });
-    rzp.open();
   }
 
   function handleNewDeposit() {
@@ -610,48 +528,6 @@ export function Deposit() {
                     </div>
                   </CardContent>
                 </Card>
-
-                {/* ── Razorpay Instant Pay ── */}
-                <Card className="border-yellow-500/40 bg-gradient-to-br from-yellow-500/10 to-orange-500/10 overflow-hidden">
-                  <CardHeader className="pb-3">
-                    <CardTitle className="font-display text-base flex items-center gap-2">
-                      <Zap className="w-4 h-4 text-yellow-500" />
-                      Pay Instantly with Razorpay
-                    </CardTitle>
-                    <CardDescription>
-                      UPI, Credit/Debit Card, Net Banking — wallet credited
-                      instantly
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <Button
-                      className="w-full font-bold text-base py-5 gap-2 bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-400 hover:to-orange-400 text-white border-0 shadow-lg shadow-yellow-500/20"
-                      onClick={handleRazorpayPayment}
-                      disabled={!isValidAmount || razorpayLoading}
-                    >
-                      {razorpayLoading ? (
-                        <Loader2 className="w-5 h-5 animate-spin" />
-                      ) : (
-                        <CreditCard className="w-5 h-5" />
-                      )}
-                      {razorpayLoading
-                        ? "Opening Razorpay..."
-                        : `Pay ${formatINR(parsedAmount)} via Razorpay`}
-                    </Button>
-                    <p className="text-xs text-center text-muted-foreground mt-2">
-                      Secured by Razorpay · Instant wallet credit
-                    </p>
-                  </CardContent>
-                </Card>
-
-                {/* Divider between Razorpay and manual */}
-                <div className="flex items-center gap-3">
-                  <div className="h-px flex-1 bg-border/50" />
-                  <span className="text-xs text-muted-foreground font-medium px-2">
-                    OR PAY MANUALLY
-                  </span>
-                  <div className="h-px flex-1 bg-border/50" />
-                </div>
 
                 {/* ── Payment Proof Section ── */}
                 <div className="flex items-center gap-2">

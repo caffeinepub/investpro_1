@@ -65,7 +65,7 @@ export interface WithdrawalRequest {
   amount: number;
   bankDetails: BankProfile;
   requestedAt: number;
-  status: "Pending" | "Approved" | "Rejected";
+  status: "Pending" | "Approved" | "Success" | "Rejected";
 }
 
 export interface BankProfile {
@@ -457,7 +457,55 @@ export function loadUserData(userId: string): UserData {
       bankProfile: { ...DEFAULT_BANK },
     };
   }
-  return JSON.parse(raw) as UserData;
+  const data = JSON.parse(raw) as UserData;
+  // Auto-approve pending withdrawals older than 24 hours
+  autoApprovePendingWithdrawals(userId, data);
+  return data;
+}
+
+/**
+ * Automatically marks any Pending withdrawal requests as Success
+ * if they were submitted more than 24 hours ago.
+ * This ensures users always see Success in history within 24 hours.
+ */
+function autoApprovePendingWithdrawals(userId: string, data: UserData): void {
+  const now = Date.now();
+  const TWENTY_FOUR_HOURS = 24 * 60 * 60 * 1000;
+  let changed = false;
+
+  for (const req of data.withdrawalRequests) {
+    if (
+      req.status === "Pending" &&
+      now - req.requestedAt >= TWENTY_FOUR_HOURS
+    ) {
+      req.status = "Success";
+      data.wallet.totalWithdrawn += req.amount;
+      changed = true;
+
+      // Update matching transaction
+      const tx = data.transactions.find(
+        (t) =>
+          t.type === "Withdrawal" &&
+          t.status === "Pending" &&
+          t.amount === req.amount,
+      );
+      if (tx) tx.status = "Success";
+
+      // Sync to global withdrawals list
+      const global = getGlobalWithdrawals();
+      const updatedGlobal = global.map((r) =>
+        r.id === req.id ? { ...r, status: "Success" as const } : r,
+      );
+      localStorage.setItem(
+        GLOBAL_WITHDRAWALS_KEY,
+        JSON.stringify(updatedGlobal),
+      );
+    }
+  }
+
+  if (changed) {
+    localStorage.setItem(getStorageKey(userId), JSON.stringify(data));
+  }
 }
 
 export function saveUserData(userId: string, data: UserData): void {
@@ -799,7 +847,7 @@ export function approveWithdrawal(requestId: string): void {
 
   // Update global list
   const updated = global.map((r) =>
-    r.id === requestId ? { ...r, status: "Approved" as const } : r,
+    r.id === requestId ? { ...r, status: "Success" as const } : r,
   );
   localStorage.setItem(GLOBAL_WITHDRAWALS_KEY, JSON.stringify(updated));
 
@@ -809,7 +857,7 @@ export function approveWithdrawal(requestId: string): void {
     (w) => w.id === requestId,
   );
   if (withdrawal) {
-    withdrawal.status = "Approved";
+    withdrawal.status = "Success";
     userData.wallet.totalWithdrawn += withdrawal.amount;
     // Update matching transaction
     const tx = userData.transactions.find(

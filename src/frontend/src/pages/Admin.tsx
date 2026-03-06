@@ -67,7 +67,7 @@ function timeAgo(timestamp: number): string {
   return `${days}d ago`;
 }
 
-type RequestStatus = "Pending" | "Approved" | "Rejected";
+type RequestStatus = "Pending" | "Approved" | "Success" | "Rejected";
 
 function StatusBadge({ status }: { status: RequestStatus }) {
   if (status === "Pending")
@@ -77,11 +77,11 @@ function StatusBadge({ status }: { status: RequestStatus }) {
         Pending
       </Badge>
     );
-  if (status === "Approved")
+  if (status === "Approved" || status === "Success")
     return (
       <Badge className="bg-chart-2/15 text-chart-2 border-chart-2/30 text-xs gap-1 shrink-0">
         <CheckCircle2 className="w-3 h-3" />
-        Approved
+        Success
       </Badge>
     );
   return (
@@ -602,7 +602,10 @@ function WithdrawalsTab() {
   );
 
   const filtered = withdrawals.filter((w) => {
-    const matchFilter = filter === "All" || w.status === filter;
+    const matchFilter =
+      filter === "All" ||
+      w.status === filter ||
+      (filter === "Success" && w.status === "Approved");
     const matchSearch =
       !search ||
       w.userName.toLowerCase().includes(search.toLowerCase()) ||
@@ -630,9 +633,9 @@ function WithdrawalsTab() {
     try {
       await approveMutation.mutateAsync(id);
       notifyWhatsApp(
-        `WITHDRAWAL APPROVED\nUser: ${req.userName}\nAmount: ₹${req.amount}\nAccount: ${req.bankDetails.accountNumber}\nIFSC: ${req.bankDetails.ifscCode}\nPlease process the bank transfer.`,
+        `WITHDRAWAL SUCCESS\nUser: ${req.userName}\nAmount: ₹${req.amount}\nAccount: ${req.bankDetails.accountNumber}\nIFSC: ${req.bankDetails.ifscCode}\nPlease process the bank transfer.`,
       );
-      toast.success("Withdrawal approved and processed");
+      toast.success("Withdrawal marked as Success — amount credited");
     } catch {
       toast.error("Failed to approve");
     }
@@ -658,7 +661,7 @@ function WithdrawalsTab() {
           className="bg-secondary/30 border-border/50 text-sm h-9"
         />
         <div className="flex gap-1.5 flex-shrink-0 flex-wrap">
-          {(["All", "Pending", "Approved", "Rejected"] as const).map((f) => (
+          {(["All", "Pending", "Success", "Rejected"] as const).map((f) => (
             <Button
               key={f}
               size="sm"
@@ -669,7 +672,15 @@ function WithdrawalsTab() {
               {f}
               {f !== "All" && (
                 <span className="ml-1 text-[10px] opacity-70">
-                  ({withdrawals.filter((w) => w.status === f).length})
+                  (
+                  {
+                    withdrawals.filter(
+                      (w) =>
+                        w.status === f ||
+                        (f === "Success" && w.status === "Approved"),
+                    ).length
+                  }
+                  )
                 </span>
               )}
             </Button>

@@ -33,26 +33,37 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 function StatusBadge({ status }: { status: WithdrawalRequest["status"] }) {
-  const map = {
+  const map: Record<
+    WithdrawalRequest["status"],
+    { cls: string; icon: typeof Clock; label: string }
+  > = {
     Pending: {
       cls: "bg-warning/10 text-warning border-warning/20",
       icon: Clock,
+      label: "Pending",
     },
     Approved: {
       cls: "bg-chart-2/10 text-chart-2 border-chart-2/20",
       icon: CheckCircle2,
+      label: "Approved",
+    },
+    Success: {
+      cls: "bg-chart-2/10 text-chart-2 border-chart-2/20",
+      icon: CheckCircle2,
+      label: "Success",
     },
     Rejected: {
       cls: "bg-destructive/10 text-destructive border-destructive/20",
       icon: XCircle,
+      label: "Rejected",
     },
   };
-  const config = map[status];
+  const config = map[status] ?? map.Pending;
   const Icon = config.icon;
   return (
     <Badge className={`${config.cls} border text-xs gap-1 font-medium`}>
       <Icon className="w-3 h-3" />
-      {status}
+      {config.label}
     </Badge>
   );
 }
